@@ -5,8 +5,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>web</module>
-		<module>model</module>
-		<module>persistence</module>
+		<module>engine</module>
 		<module>common-utils</module>
 	</modules>
 	<parent>
@@ -30,27 +29,6 @@
 			<groupId>com.example</groupId>
 			<artifactId>common-utils</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-websocket</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-jasper</artifactId>
 		</dependency>
 	</dependencies>
 
