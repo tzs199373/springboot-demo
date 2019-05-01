@@ -5,6 +5,8 @@ import com.engine.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
     @Autowired
@@ -13,5 +15,9 @@ public class UserService {
     public User addUser(User user){
         User u = userDao.save(user);
         return u;
+    }
+
+    public User findUsersByUsername(String username){
+        return userDao.findUsersByUsername(username).get(0);
     }
 }

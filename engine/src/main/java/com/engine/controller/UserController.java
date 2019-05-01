@@ -18,4 +18,10 @@ public class UserController {
         User u = userService.addUser(user);
         return u;
     }
+
+    @RequestMapping("/findUsersByUsername")
+    public User findUsersByUsername(String username){
+        User u = userService.findUsersByUsername(username);
+        return u;
+    }
 }
