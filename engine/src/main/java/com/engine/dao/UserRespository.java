@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author tzs
@@ -18,7 +19,7 @@ import java.util.List;
 public interface UserRespository  extends JpaRepository<User, Integer> ,BaseRepository{
     List<User> findUsersByUsername(String username);
 
-    default List<User> qryUsersByUsername(String username) {
+    default List<Map> qryUsersByUsername(String username) {
         StringBuffer query = new StringBuffer("SELECT * FROM USER u ");
         query.append("WHERE 1=1 ");
         List lstParam = new ArrayList();

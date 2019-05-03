@@ -21,7 +21,7 @@ public class UserService {
         return userDao.findUsersByUsername(username).get(0);
     }
 
-    public User qryUsersByUsername(String username){
+    public Object qryUsersByUsername(String username){
         return userDao.qryUsersByUsername(username).get(0);
     }
 }
