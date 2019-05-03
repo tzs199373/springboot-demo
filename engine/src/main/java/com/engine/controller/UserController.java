@@ -24,4 +24,10 @@ public class UserController {
         User u = userService.findUsersByUsername(username);
         return u;
     }
+
+    @RequestMapping("/qryUsersByUsername")
+    public Object qryUsersByUsername(String username){
+        Object o = userService.qryUsersByUsername(username);
+        return o;
+    }
 }
