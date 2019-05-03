@@ -20,4 +20,8 @@ public class UserService {
     public User findUsersByUsername(String username){
         return userDao.findUsersByUsername(username).get(0);
     }
+
+    public User qryUsersByUsername(String username){
+        return userDao.qryUsersByUsername(username).get(0);
+    }
 }
