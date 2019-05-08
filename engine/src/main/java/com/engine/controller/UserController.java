@@ -2,6 +2,8 @@ package com.engine.controller;
 
 import com.engine.model.User;
 import com.engine.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,15 +15,20 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
+
     @RequestMapping("/addUser")
-    public User addUser(@RequestBody User user){
+    public User addUser(@RequestBody User user) throws Exception{
         User u = userService.addUser(user);
+        logger.info("==================info");
+        logger.debug("==================debug");
         return u;
     }
 
     @RequestMapping("/findUsersByUsername")
     public User findUsersByUsername(String username){
         User u = userService.findUsersByUsername(username);
+
         return u;
     }
 

@@ -4,16 +4,31 @@ import com.engine.dao.UserRespository;
 import com.engine.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import java.util.List;
+import javax.transaction.Transactional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class UserService {
     @Autowired
     UserRespository userDao;
 
-    public User addUser(User user){
+    @Transactional
+    public User addUser(User user) throws Exception{
         User u = userDao.save(user);
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            @Override
+            public void afterCommit() {
+                CompletableFuture.runAsync(() -> {
+                    User dbu = findUsersByUsername(user.getUsername());
+                    System.out.println("========"+dbu.getId());//新增用户提交后，打印出新用户的id
+                });
+            }
+        });
+
         return u;
     }
 
