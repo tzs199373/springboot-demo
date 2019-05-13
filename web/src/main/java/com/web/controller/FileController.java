@@ -46,5 +46,10 @@ public class FileController {
             e.printStackTrace();
         }
     }
+
+    @RequestMapping(value = "/fileUpload")
+    public String fileUpload(){
+        return "fileUpload";
+    }
 }
 
