@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 @RestController
+@RequestMapping(value = "/file")
 public class FileController {
     /**
      * 文件上传

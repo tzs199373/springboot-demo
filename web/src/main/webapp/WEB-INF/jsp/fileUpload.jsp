@@ -15,7 +15,7 @@
     <input type="file"  name="uploadFile" id="file1" onchange="MutilInput(this)">
 </form>
 
-<script src="../js/jquery.min.js"></script>
+<script src="js/jquery.min.js"></script>
 <script type="text/javascript">
 
     function MutilInput(a) {
@@ -25,7 +25,7 @@
             var form = new FormData(document.getElementById("form"));
             $.ajax({
                 type: "post",
-                url: "http://localhost:8081/file/upload",
+                url: "http://localhost:8080/file/upload",
                 data: form,
                 processData: false,
                 contentType: false,
