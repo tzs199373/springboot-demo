@@ -27,6 +27,7 @@
                 type: "post",
                 url: "http://localhost:8080/file/upload",
                 data: formData,
+                dataType:"json",
                 processData: false,
                 contentType: false,
                 beforeSend: function () {

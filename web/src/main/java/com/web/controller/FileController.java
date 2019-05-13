@@ -20,7 +20,7 @@ public class FileController {
      * @param request
      */
     @RequestMapping(value = "/upload")
-    public void uploadFile(@RequestParam(value = "uploadFile", required = false) MultipartFile[] multipartFiles,
+    public Object uploadFile(@RequestParam(value = "uploadFile", required = false) MultipartFile[] multipartFiles,
                                  HttpServletRequest request){
         try {
             for (int i=0; i< multipartFiles.length; i++){
@@ -45,6 +45,7 @@ public class FileController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return "{\"flag\":\"success\"}";
     }
 }
 
