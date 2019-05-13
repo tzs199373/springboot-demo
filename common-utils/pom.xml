@@ -94,11 +94,6 @@
 			<artifactId>spring-context-support</artifactId>
 			<version>RELEASE</version>
 		</dependency>
-		<!-- jdbcTemplate -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
-		</dependency>
 		<!--http-->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
