@@ -22,11 +22,11 @@
         if (a.files.length == 0) {
 
         } else {
-            var form = new FormData(document.getElementById("form"));
+            var formData = new FormData(document.getElementById("form1"));
             $.ajax({
                 type: "post",
                 url: "http://localhost:8080/file/upload",
-                data: form,
+                data: formData,
                 processData: false,
                 contentType: false,
                 beforeSend: function () {
