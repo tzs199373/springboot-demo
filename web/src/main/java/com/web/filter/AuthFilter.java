@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Ȩ����֤������
+ * ????????????
  */
 public class AuthFilter implements Filter {
 
@@ -19,7 +19,6 @@ public class AuthFilter implements Filter {
                          FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest)arg0;
         HttpServletResponse response = (HttpServletResponse)arg1;
-        System.out.println("doing");
         if(needLogin(request)) {
             response.sendRedirect("login");
             return;
@@ -31,11 +30,6 @@ public class AuthFilter implements Filter {
     public void init(FilterConfig config) throws ServletException {
     }
 
-    /**
-     * �ж��Ƿ���Ҫ��¼
-     * @param request
-     * @return
-     */
     private boolean needLogin(HttpServletRequest request) {
         return false;
     }
