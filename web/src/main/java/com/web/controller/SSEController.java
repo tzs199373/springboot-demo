@@ -48,17 +48,4 @@ public class SSEController {
         }
         return sseEmitter;
     }
-
-
-    @RequestMapping("/sse")
-    public String ssepage() {
-        return "sse";
-    }
-
-    @RequestMapping("/sse2")
-    public String ssepage2() {
-        return "sse2";
-    }
-
-
 }
