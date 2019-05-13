@@ -1,5 +1,6 @@
 package com.engine.service;
 
+import com.engine.component.MyComponent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,5 +21,6 @@ public class MyServiceTest {
 
     @Test
     public void printPropertiesValue() throws Exception {
+        System.out.println("==========="+new MyComponent().getUsername());
     }
 }
