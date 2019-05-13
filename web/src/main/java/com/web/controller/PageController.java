@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * Created by asus on 2019/4/1.
  */
 @Controller
-public class WebsocketController {
+public class PageController {
     @RequestMapping ("/web1")
     public String websocket(){
         return "websocket1";
@@ -18,9 +18,25 @@ public class WebsocketController {
         return "websocket2";
     }
 
-    @RequestMapping(value = "/login")
+    @RequestMapping(value = "/index")
     public String test(){
         return "index";
+    }
+
+    @RequestMapping(value = "/fileUpload")
+    public String fileUpload(){
+        return "fileUpload";
+    }
+
+
+    @RequestMapping("/sse")
+    public String ssepage() {
+        return "sse";
+    }
+
+    @RequestMapping("/sse2")
+    public String ssepage2() {
+        return "sse2";
     }
 
 //    @Bean

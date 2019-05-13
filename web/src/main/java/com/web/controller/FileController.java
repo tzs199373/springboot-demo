@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 @RestController
-@RequestMapping("/file")
 public class FileController {
     /**
      * 文件上传
@@ -45,11 +44,6 @@ public class FileController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @RequestMapping(value = "/fileUpload")
-    public String fileUpload(){
-        return "fileUpload";
     }
 }
 
