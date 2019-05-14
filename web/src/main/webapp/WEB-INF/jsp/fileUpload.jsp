@@ -1,27 +1,20 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: asus
-  Date: 2019/5/13
-  Time: 15:42
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>多文件上传</title>
 </head>
 <body>
 <form id="form1">
-    <input type="file"  name="uploadFile" id="file1" onchange="MutilInput(this)" multiple>
+    <input type="file"  name="uploadFile" id="file1" multiple>
 </form>
 
 <script src="js/jquery.min.js"></script>
 <script type="text/javascript">
-
-    function MutilInput(fileDom) {
-        if (fileDom.files.length > 0) {
-            console.log("上传文件个数："+ fileDom.files.length);
+    $("#file1").on("change",function () {
+        if (this.files.length > 0) {
+            console.log("上传文件个数："+ this.files.length);
             var formData = new FormData(document.getElementById("form1"));
+            formData.append("name","tzs");//追加参数
             $.ajax({
                 type: "post",
                 url: "http://localhost:8080/file/upload",
@@ -39,7 +32,7 @@
                 }
             });
         }
-    }
+    });
 </script>
 </body>
 </html>
