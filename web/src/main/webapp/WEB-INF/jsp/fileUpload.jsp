@@ -19,18 +19,13 @@
 <script type="text/javascript">
 
     function MutilInput(fileDom) {
-        alert(fileDom.files.length );
-
-        if (fileDom.files.length == 0) {
-
-        } else {
+        if (fileDom.files.length > 0) {
+            console.log("上传文件个数："+ fileDom.files.length);
             var formData = new FormData(document.getElementById("form1"));
             $.ajax({
                 type: "post",
                 url: "http://localhost:8080/file/upload",
                 data: formData,
-                dataType:"jsonp",  //数据格式设置为jsonp
-                jsonp:"callback",
                 processData: false,
                 contentType: false,
                 beforeSend: function () {
