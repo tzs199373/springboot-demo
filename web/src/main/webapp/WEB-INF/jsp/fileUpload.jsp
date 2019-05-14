@@ -12,14 +12,16 @@
 </head>
 <body>
 <form id="form1">
-    <input type="file"  name="uploadFile" id="file1" onchange="MutilInput(this)">
+    <input type="file"  name="uploadFile" id="file1" onchange="MutilInput(this)" multiple>
 </form>
 
 <script src="js/jquery.min.js"></script>
 <script type="text/javascript">
 
-    function MutilInput(a) {
-        if (a.files.length == 0) {
+    function MutilInput(fileDom) {
+        alert(fileDom.files.length );
+
+        if (fileDom.files.length == 0) {
 
         } else {
             var formData = new FormData(document.getElementById("form1"));
@@ -27,7 +29,8 @@
                 type: "post",
                 url: "http://localhost:8080/file/upload",
                 data: formData,
-                dataType:"json",
+                dataType:"jsonp",  //数据格式设置为jsonp
+                jsonp:"callback",
                 processData: false,
                 contentType: false,
                 beforeSend: function () {

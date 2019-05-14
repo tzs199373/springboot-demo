@@ -1,8 +1,8 @@
 package com.web.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.commonutils.util.json.JSONObject;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +11,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-@RestController
+@Controller
 @RequestMapping(value = "/file")
 public class FileController {
     /**
@@ -19,8 +19,10 @@ public class FileController {
      * @param multipartFiles
      * @param request
      */
-    @RequestMapping(value = "/upload")
-    public Object uploadFile(@RequestParam(value = "uploadFile", required = false) MultipartFile[] multipartFiles,
+    @ResponseBody
+    @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+
+    public String uploadFile(@RequestParam(value = "uploadFile", required = false) MultipartFile[] multipartFiles,
                                  HttpServletRequest request){
         try {
             for (int i=0; i< multipartFiles.length; i++){
@@ -45,7 +47,11 @@ public class FileController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "{\"flag\":\"success\"}";
+        // 将获取的json数据封装一层，然后在给返回
+        JSONObject result = new JSONObject();
+        result.put("msg", "ok");
+
+        return result.toString();
     }
 }
 
