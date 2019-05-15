@@ -55,8 +55,10 @@ public class FileController {
     }
 
     /**
-     *文件下载
-     * @return
+     * 文件下载
+     * @param request
+     * @param response
+     * @throws Exception
      */
     @RequestMapping(value = "/downFile")
     public void downTask(HttpServletRequest request, HttpServletResponse response) throws Exception {
