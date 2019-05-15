@@ -62,12 +62,11 @@ public class FileController {
      */
     @RequestMapping(value = "/downFile")
     public void downTask(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        //找出该文件在服务器的位置
         File file = new File("f:\\test.txt");//测试文件
         if (!file.exists()) {
             System.out.println("文件不存在!");
         } else {
-            response.setHeader("content-disposition", "attachment;filename=" + new String(file.getName().getBytes("gb2312"), "ISO8859-1"));
+            response.setHeader("content-disposition", "attachment;filename=" + file.getName());
             // 读取要下载的文件，保存到输入流
             InputStream in = new FileInputStream(file);
             // 创建输出流
