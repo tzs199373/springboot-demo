@@ -1,4 +1,4 @@
-package com.commonutils.util.http;
+package com.dahua.util;
 
 import java.nio.charset.Charset;
 import java.security.KeyManagementException;
@@ -10,7 +10,10 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.http.*;
+import org.apache.http.HeaderElement;
+import org.apache.http.HeaderElementIterator;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -35,29 +38,21 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
-/**
- *
- *<p>Title:HttpClientPoolUtil</p>
- *<p>Description:httpClient?????????</p>
- *<p>Company:????????????????</p>
- * @author 32174
- * @date 2018??12??15??
- */
 public class HttpClientPoolUtil {
 
 	public static CloseableHttpClient httpClient = null;
 
 	/**
-	 * ??????????
+	 * 初始化连接池
 	 * @throws NoSuchAlgorithmException
 	 * @throws KeyManagementException
 	 */
 	public static synchronized void initPools() throws KeyManagementException, NoSuchAlgorithmException {
 
 		if (httpClient == null) {
-			//??????????????????https????
+			//采用绕过验证的方式处理https请求
 			SSLContext sslcontext = createIgnoreVerifySSL();
-			//????Э??http??https????????socket????????????
+			//设置协议http和https对应的处理socket链接工厂的对象
 			Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
 					.register("http", PlainConnectionSocketFactory.INSTANCE)
 					.register("https", new SSLConnectionSocketFactory(sslcontext))
@@ -65,15 +60,12 @@ public class HttpClientPoolUtil {
 			PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 			cm.setDefaultMaxPerRoute(20);
 			cm.setMaxTotal(500);
-			//??????????fiddler???????
-//			HttpHost proxy = new HttpHost("127.0.0.1", 8888);
-//			httpClient = HttpClients.custom().setProxy(proxy).setKeepAliveStrategy(defaultStrategy).setConnectionManager(cm).build();
 			httpClient = HttpClients.custom().setKeepAliveStrategy(defaultStrategy).setConnectionManager(cm).build();
 		}
 	}
 
 	/**
-	 * Http connection keepAlive ????
+	 * Http connection keepAlive 设置
 	 */
 	public static ConnectionKeepAliveStrategy defaultStrategy = new ConnectionKeepAliveStrategy() {
 		public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
@@ -96,7 +88,7 @@ public class HttpClientPoolUtil {
 	};
 
 	/**
-	 * ??????
+	 * 绕过验证
 	 *
 	 * @return
 	 * @throws NoSuchAlgorithmException
@@ -105,21 +97,21 @@ public class HttpClientPoolUtil {
 	public static SSLContext createIgnoreVerifySSL() throws NoSuchAlgorithmException, KeyManagementException {
 		SSLContext sc = SSLContext.getInstance("SSLv3");
 
-		// ??????X509TrustManager???????????????????????????????
+		// 实现一个X509TrustManager接口，用于绕过验证，不用修改里面的方法
 		X509TrustManager trustManager = new X509TrustManager() {
-
+			@Override
 			public void checkClientTrusted(
 					java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
 					String paramString) {
 			}
 
-
+			@Override
 			public void checkServerTrusted(
 					java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
 					String paramString) {
 			}
 
-
+			@Override
 			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
 				return null;
 			}
@@ -130,11 +122,11 @@ public class HttpClientPoolUtil {
 	}
 
 	/**
-	 * ????????
+	 * 创建请求
 	 *
-	 * @param url ????url
-	 * @param methodName ????????????
-	 * @param headMap ?????
+	 * @param url 请求url
+	 * @param methodName 请求的方法类型
+	 * @param headMap 请求头
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 * @throws KeyManagementException
@@ -170,10 +162,9 @@ public class HttpClientPoolUtil {
 
 
 	/**
-	 * ???GET ????
+	 * 执行GET 请求
 	 *
-	 * @param url ????url
-	 * @param headMap ?????
+	 * @param url
 	 * @return
 	 */
 	public static String get(String url,Map<String, String> headMap) throws Exception{
@@ -209,11 +200,11 @@ public class HttpClientPoolUtil {
 	}
 
 	/**
-	 * ???http post????
+	 * 执行http post请求 默认采用Content-Type：application/json，Accept：application/json
 	 *
-	 * @param url 		??????
-	 * @param data  	????????		???application/x-www-form-urlencoded,data????????????????application/json??data?json?????
-	 * @param headMap  	????? 		headMap????????Content-Type
+	 * @param url 请求地址
+	 * @param data  请求数据
+	 * @param data  请求头
 	 * @return
 	 */
 	public static String post(String url, String data,Map<String, String> headMap) throws Exception{
@@ -251,11 +242,14 @@ public class HttpClientPoolUtil {
 	}
 
 	/**
-	 * ???http put????
+	 * 执行http put请求
 	 *
-	 * @param url 		??????
-	 * @param data  	????????
-	 * @param headMap  	?????
+	 * 若采用Content-Type：application/json，则data传json字符串
+	 * 若采用Content-Type：application/x-www-form-urlencoded，则data传键值对
+	 *
+	 * @param url 请求地址
+	 * @param data  请求数据
+	 * @param data  请求头
 	 * @return
 	 */
 	public static String put(String url, String data,Map<String, String> headMap) throws Exception{
@@ -293,10 +287,9 @@ public class HttpClientPoolUtil {
 	}
 
 	/**
-	 * ???DELETE ????
+	 * 执行DELETE 请求
 	 *
-	 * @param url 		??????
-	 * @param headMap  	?????
+	 * @param url
 	 * @return
 	 */
 	public static String delete(String url,Map<String, String> headMap) throws Exception{
@@ -330,4 +323,5 @@ public class HttpClientPoolUtil {
 		}
 		return responseBody;
 	}
+
 }
