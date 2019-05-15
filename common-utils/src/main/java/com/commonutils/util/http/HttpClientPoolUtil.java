@@ -1,4 +1,4 @@
-package com.dahua.util;
+package com.commonutils.util.http;
 
 import java.nio.charset.Charset;
 import java.security.KeyManagementException;
@@ -200,7 +200,12 @@ public class HttpClientPoolUtil {
 	}
 
 	/**
-	 * 执行http post请求 默认采用Content-Type：application/json，Accept：application/json
+	 * 执行http post请求
+	 * 若采用Content-Type：application/json，则data传json字符串
+	 * 若采用Content-Type：application/x-www-form-urlencoded，则data传键值对
+	 *
+	 * 可参考
+	 * @see com.commonutils.util.http.HttpUtil postBody与httpPost方法做了进一步封装
 	 *
 	 * @param url 请求地址
 	 * @param data  请求数据
@@ -243,9 +248,6 @@ public class HttpClientPoolUtil {
 
 	/**
 	 * 执行http put请求
-	 *
-	 * 若采用Content-Type：application/json，则data传json字符串
-	 * 若采用Content-Type：application/x-www-form-urlencoded，则data传键值对
 	 *
 	 * @param url 请求地址
 	 * @param data  请求数据
