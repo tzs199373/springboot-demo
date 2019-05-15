@@ -38,26 +38,26 @@ import org.apache.http.util.EntityUtils;
 /**
  *
  *<p>Title:HttpClientPoolUtil</p>
- *<p>Description:httpClient�̳߳ع�����</p>
- *<p>Company:�㽭�󻪼����ɷ����޹�˾</p>
+ *<p>Description:httpClient?????????</p>
+ *<p>Company:????????????????</p>
  * @author 32174
- * @date 2018��12��15��
+ * @date 2018??12??15??
  */
 public class HttpClientPoolUtil {
 
 	public static CloseableHttpClient httpClient = null;
 
 	/**
-	 * ��ʼ�����ӳ�
+	 * ??????????
 	 * @throws NoSuchAlgorithmException
 	 * @throws KeyManagementException
 	 */
 	public static synchronized void initPools() throws KeyManagementException, NoSuchAlgorithmException {
 
 		if (httpClient == null) {
-			//�����ƹ���֤�ķ�ʽ����https����
+			//??????????????????https????
 			SSLContext sslcontext = createIgnoreVerifySSL();
-			//����Э��http��https��Ӧ�Ĵ���socket���ӹ����Ķ���
+			//????��??http??https????????socket????????????
 			Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
 					.register("http", PlainConnectionSocketFactory.INSTANCE)
 					.register("https", new SSLConnectionSocketFactory(sslcontext))
@@ -65,7 +65,7 @@ public class HttpClientPoolUtil {
 			PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 			cm.setDefaultMaxPerRoute(20);
 			cm.setMaxTotal(500);
-			//��Ӵ�������fiddler����ץ��
+			//??????????fiddler???????
 //			HttpHost proxy = new HttpHost("127.0.0.1", 8888);
 //			httpClient = HttpClients.custom().setProxy(proxy).setKeepAliveStrategy(defaultStrategy).setConnectionManager(cm).build();
 			httpClient = HttpClients.custom().setKeepAliveStrategy(defaultStrategy).setConnectionManager(cm).build();
@@ -73,7 +73,7 @@ public class HttpClientPoolUtil {
 	}
 
 	/**
-	 * Http connection keepAlive ����
+	 * Http connection keepAlive ????
 	 */
 	public static ConnectionKeepAliveStrategy defaultStrategy = new ConnectionKeepAliveStrategy() {
 		public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
@@ -96,7 +96,7 @@ public class HttpClientPoolUtil {
 	};
 
 	/**
-	 * �ƹ���֤
+	 * ??????
 	 *
 	 * @return
 	 * @throws NoSuchAlgorithmException
@@ -105,7 +105,7 @@ public class HttpClientPoolUtil {
 	public static SSLContext createIgnoreVerifySSL() throws NoSuchAlgorithmException, KeyManagementException {
 		SSLContext sc = SSLContext.getInstance("SSLv3");
 
-		// ʵ��һ��X509TrustManager�ӿڣ������ƹ���֤�������޸�����ķ���
+		// ??????X509TrustManager???????????????????????????????
 		X509TrustManager trustManager = new X509TrustManager() {
 
 			public void checkClientTrusted(
@@ -130,11 +130,11 @@ public class HttpClientPoolUtil {
 	}
 
 	/**
-	 * ��������
+	 * ????????
 	 *
-	 * @param url ����url
-	 * @param methodName ����ķ�������
-	 * @param headMap ����ͷ
+	 * @param url ????url
+	 * @param methodName ????????????
+	 * @param headMap ?????
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 * @throws KeyManagementException
@@ -170,10 +170,10 @@ public class HttpClientPoolUtil {
 
 
 	/**
-	 * ִ��GET ����
+	 * ???GET ????
 	 *
-	 * @param url ����url
-	 * @param headMap ����ͷ
+	 * @param url ????url
+	 * @param headMap ?????
 	 * @return
 	 */
 	public static String get(String url,Map<String, String> headMap) throws Exception{
@@ -209,11 +209,11 @@ public class HttpClientPoolUtil {
 	}
 
 	/**
-	 * ִ��http post����
+	 * ???http post????
 	 *
-	 * @param url 		�����ַ
-	 * @param data  	��������		��Ϊapplication/x-www-form-urlencoded,dataΪ��ֵ���ַ�������Ϊapplication/json��dataΪjson�ַ���
-	 * @param headMap  	����ͷ 		headMap����Ҫָ��Content-Type
+	 * @param url 		??????
+	 * @param data  	????????		???application/x-www-form-urlencoded,data????????????????application/json??data?json?????
+	 * @param headMap  	????? 		headMap????????Content-Type
 	 * @return
 	 */
 	public static String post(String url, String data,Map<String, String> headMap) throws Exception{
@@ -251,11 +251,11 @@ public class HttpClientPoolUtil {
 	}
 
 	/**
-	 * ִ��http put����
+	 * ???http put????
 	 *
-	 * @param url 		�����ַ
-	 * @param data  	��������
-	 * @param headMap  	����ͷ
+	 * @param url 		??????
+	 * @param data  	????????
+	 * @param headMap  	?????
 	 * @return
 	 */
 	public static String put(String url, String data,Map<String, String> headMap) throws Exception{
@@ -293,10 +293,10 @@ public class HttpClientPoolUtil {
 	}
 
 	/**
-	 * ִ��DELETE ����
+	 * ???DELETE ????
 	 *
-	 * @param url 		�����ַ
-	 * @param headMap  	����ͷ
+	 * @param url 		??????
+	 * @param headMap  	?????
 	 * @return
 	 */
 	public static String delete(String url,Map<String, String> headMap) throws Exception{
