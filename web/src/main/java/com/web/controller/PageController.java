@@ -28,6 +28,10 @@ public class PageController {
         return "fileUpload";
     }
 
+    @RequestMapping(value = "/fileDown")
+    public String fileDown(){
+        return "fileDown";
+    }
 
     @RequestMapping("/sse")
     public String ssepage() {
@@ -39,11 +43,4 @@ public class PageController {
         return "sse2";
     }
 
-//    @Bean
-//    public InternalResourceViewResolver viewResolver() {
-//        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-//        viewResolver.setPrefix("/WEB-INF/view/");
-//        viewResolver.setSuffix(".jsp");
-//        return viewResolver;
-//    }
 }
