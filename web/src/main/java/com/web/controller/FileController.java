@@ -1,15 +1,15 @@
 package com.web.controller;
 
 import com.commonutils.util.json.JSONObject;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 
 @Controller
 @RequestMapping(value = "/file")
@@ -52,6 +52,37 @@ public class FileController {
         result.put("msg", "ok");
 
         return result.toString();
+    }
+
+    /**
+     *文件下载
+     * @return
+     */
+    @RequestMapping(value = "/downFile")
+    public void downTask(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        //找出该文件在服务器的位置
+        File file = new File("f:\\test.txt");//测试文件
+        if (!file.exists()) {
+            System.out.println("文件不存在!");
+        } else {
+            response.setHeader("content-disposition", "attachment;filename=" + new String(file.getName().getBytes("gb2312"), "ISO8859-1"));
+            // 读取要下载的文件，保存到输入流
+            InputStream in = new FileInputStream(file);
+            // 创建输出流
+            OutputStream out = response.getOutputStream();
+            // 创建缓冲区
+            byte buffer[] = new byte[1024];
+            int len;
+            // 循环将输入流中的内容读取到缓冲区当中
+            while ((len = in.read(buffer)) > 0) {
+                // 输出缓冲区的内容到浏览器，实现文件下载
+                out.write(buffer, 0, len);
+            }
+            // 关闭文件输入流
+            in.close();
+            // 关闭输出流
+            out.close();
+        }
     }
 }
 

@@ -6,7 +6,7 @@
 <body>
 <button id="down">点我下载</button>
 <div style="display: none;">
-    <form id="downForm" action="<%=path %>/project/downTask.do"></form>
+    <form id="downForm" action="file/downFile"></form>
 </div>
 
 <script src="js/jquery.min.js"></script>
