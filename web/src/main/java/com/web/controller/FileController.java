@@ -1,6 +1,7 @@
 package com.web.controller;
 
 import com.commonutils.util.json.JSONObject;
+import com.commonutils.util.validate.FileTypeCensor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,7 +14,7 @@ import java.io.*;
 @RequestMapping(value = "/file")
 public class FileController {
     /**
-     * æ–‡ä»¶ä¸Šä¼ 
+     * ÎÄ¼şÉÏ´«
      * @param multipartFiles
      * @param request
      */
@@ -22,11 +23,17 @@ public class FileController {
 
     public String uploadFile(@RequestParam(value = "uploadFile", required = false) MultipartFile[] multipartFiles,
                                  HttpServletRequest request){
+        JSONObject result = new JSONObject();
         try {
             for (int i=0; i< multipartFiles.length; i++){
-                // è¾“å‡ºæºæ–‡ä»¶åç§° å°±æ˜¯æŒ‡ä¸Šä¼ å‰çš„æ–‡ä»¶åç§°
+                boolean upFlag = FileTypeCensor.isLegalFileType(FileTypeCensor.FILE_SUFFIX.IMAGE.getValue(),multipartFiles[i]);
+                if(!upFlag){
+                    throw new Exception(FileTypeCensor.FILE_SUFFIX.IMAGE.getDesc()+"±ØĞëÎª"+FileTypeCensor.FILE_SUFFIX.IMAGE.getValue());
+                }
+
+                // Êä³öÔ´ÎÄ¼şÃû³Æ ¾ÍÊÇÖ¸ÉÏ´«Ç°µÄÎÄ¼şÃû³Æ
                 System.out.println("uploadFile:" + multipartFiles[i].getOriginalFilename());
-                // åˆ›å»ºæ–‡ä»¶(MultipartFileè½¬File)
+                // ´´½¨ÎÄ¼ş(MultipartFile×ªFile)
                 String saveRoot = "f:\\";
                 File file = new File(saveRoot + multipartFiles[i].getOriginalFilename());
                 InputStream in  = multipartFiles[i].getInputStream();
@@ -39,47 +46,47 @@ public class FileController {
                 in.close();
                 os.close();
             }
-            //è¾“å‡ºå…¶ä»–å­—æ®µ
+            //Êä³öÆäËû×Ö¶Î
             String name = request.getParameter("name");
             System.out.println("name:"+name);
         } catch (Exception e) {
-            e.printStackTrace();
+            result.put("msg", e.getMessage());
+            result.put("flag", "fail");
         }
-        // å°†è·å–çš„jsonæ•°æ®å°è£…ä¸€å±‚ï¼Œç„¶ååœ¨ç»™è¿”å›
-        JSONObject result = new JSONObject();
-        result.put("msg", "ok");
+        result.put("flag", "success");
+        result.put("msg", "success");
 
         return result.toString();
     }
 
     /**
-     * æ–‡ä»¶ä¸‹è½½
+     * ÎÄ¼şÏÂÔØ
      * @param request
      * @param response
      * @throws Exception
      */
     @RequestMapping(value = "/downFile")
     public void downTask(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        File file = new File("f:\\test.txt");//æµ‹è¯•æ–‡ä»¶
+        File file = new File("f:\\test.txt");//²âÊÔÎÄ¼ş
         if (!file.exists()) {
-            System.out.println("æ–‡ä»¶ä¸å­˜åœ¨!");
+            System.out.println("ÎÄ¼ş²»´æÔÚ!");
         } else {
             response.setHeader("content-disposition", "attachment;filename=" + file.getName());
-            // è¯»å–è¦ä¸‹è½½çš„æ–‡ä»¶ï¼Œä¿å­˜åˆ°è¾“å…¥æµ
+            // ¶ÁÈ¡ÒªÏÂÔØµÄÎÄ¼ş£¬±£´æµ½ÊäÈëÁ÷
             InputStream in = new FileInputStream(file);
-            // åˆ›å»ºè¾“å‡ºæµ
+            // ´´½¨Êä³öÁ÷
             OutputStream out = response.getOutputStream();
-            // åˆ›å»ºç¼“å†²åŒº
+            // ´´½¨»º³åÇø
             byte buffer[] = new byte[1024];
             int len;
-            // å¾ªç¯å°†è¾“å…¥æµä¸­çš„å†…å®¹è¯»å–åˆ°ç¼“å†²åŒºå½“ä¸­
+            // Ñ­»·½«ÊäÈëÁ÷ÖĞµÄÄÚÈİ¶ÁÈ¡µ½»º³åÇøµ±ÖĞ
             while ((len = in.read(buffer)) > 0) {
-                // è¾“å‡ºç¼“å†²åŒºçš„å†…å®¹åˆ°æµè§ˆå™¨ï¼Œå®ç°æ–‡ä»¶ä¸‹è½½
+                // Êä³ö»º³åÇøµÄÄÚÈİµ½ä¯ÀÀÆ÷£¬ÊµÏÖÎÄ¼şÏÂÔØ
                 out.write(buffer, 0, len);
             }
-            // å…³é—­æ–‡ä»¶è¾“å…¥æµ
+            // ¹Ø±ÕÎÄ¼şÊäÈëÁ÷
             in.close();
-            // å…³é—­è¾“å‡ºæµ
+            // ¹Ø±ÕÊä³öÁ÷
             out.close();
         }
     }

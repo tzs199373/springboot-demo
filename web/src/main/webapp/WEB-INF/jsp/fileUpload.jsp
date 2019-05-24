@@ -25,7 +25,8 @@
 
                 },
                 success: function (data) {
-                    alert("上传成功");
+                    var json = JSON.parse(data);
+                    alert(json.msg);
                 },
                 error: function (e) {
                     alert("上传失败");
