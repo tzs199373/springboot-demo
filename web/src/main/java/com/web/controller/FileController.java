@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URLEncoder;
 
 @Controller
 @RequestMapping(value = "/file")
@@ -75,7 +76,7 @@ public class FileController {
         if (!file.exists()) {
             System.out.println("文件不存在!");
         } else {
-            response.setHeader("content-disposition", "attachment;filename=" + file.getName());
+            response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(file.getName(), "UTF-8"));
             // 读取要下载的文件，保存到输入流
             InputStream in = new FileInputStream(file);
             // 创建输出流
