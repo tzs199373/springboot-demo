@@ -2,12 +2,16 @@ package com.web.controller;
 
 import com.commonutils.util.json.JSONObject;
 import com.commonutils.util.validate.FileTypeCensor;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
 import java.io.*;
 
 @Controller
@@ -26,10 +30,10 @@ public class FileController {
         JSONObject result = new JSONObject();
         try {
             for (int i=0; i< multipartFiles.length; i++){
-                boolean upFlag = FileTypeCensor.isLegalFileType(FileTypeCensor.FILE_SUFFIX.IMAGE.getValue(),multipartFiles[i]);
-                if(!upFlag){
-                    throw new Exception(FileTypeCensor.FILE_SUFFIX.IMAGE.getDesc()+"必须为"+FileTypeCensor.FILE_SUFFIX.IMAGE.getValue());
-                }
+//                boolean upFlag = FileTypeCensor.isLegalFileType(FileTypeCensor.FILE_SUFFIX.IMAGE.getValue(),multipartFiles[i]);
+//                if(!upFlag){
+//                    throw new Exception(FileTypeCensor.FILE_SUFFIX.IMAGE.getDesc()+"必须为"+FileTypeCensor.FILE_SUFFIX.IMAGE.getValue());
+//                }
 
                 // 输出源文件名称 就是指上传前的文件名称
                 System.out.println("uploadFile:" + multipartFiles[i].getOriginalFilename());
@@ -89,6 +93,97 @@ public class FileController {
             // 关闭输出流
             out.close();
         }
+    }
+
+    /**
+     * 图片上传
+     * @param multipartFiles
+     * @param request
+     */
+    @ResponseBody
+    @RequestMapping(value = "/imgUpload", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+
+    public String uploadImg(@RequestParam(value = "uploadFile", required = false) MultipartFile[] multipartFiles,
+                             HttpServletRequest request){
+        JSONObject result = new JSONObject();
+        try {
+            for (int i=0; i< multipartFiles.length; i++){
+                BufferedImage image = ImageIO.read(multipartFiles[i].getInputStream());
+                if(image == null){
+                    throw new Exception("请上传图片");
+                }
+
+                // 输出源文件名称 就是指上传前的文件名称
+                System.out.println("uploadFile:" + multipartFiles[i].getOriginalFilename());
+                // 创建文件(MultipartFile转File)
+                String saveRoot = "f:\\";
+                File file = new File(saveRoot + multipartFiles[i].getOriginalFilename());
+                InputStream in  = multipartFiles[i].getInputStream();
+                OutputStream os = new FileOutputStream(file);
+                byte[] buffer = new byte[4096];
+                int n;
+                while ((n = in.read(buffer,0,4096)) != -1){
+                    os.write(buffer,0,n);
+                }
+                in.close();
+                os.close();
+            }
+            //输出其他字段
+            String name = request.getParameter("name");
+            System.out.println("name:"+name);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            result.put("msg", e.getMessage());
+            result.put("flag", "fail");
+        }
+        result.put("flag", "success");
+        result.put("msg", "success");
+
+        return result.toString();
+    }
+
+    /**
+     * excel上传
+     * @param multipartFiles
+     * @param request
+     */
+    @ResponseBody
+    @RequestMapping(value = "/excelUpload", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+
+    public String uploadExcel(@RequestParam(value = "uploadFile", required = false) MultipartFile[] multipartFiles,
+                            HttpServletRequest request){
+        JSONObject result = new JSONObject();
+        try {
+            for (int i=0; i< multipartFiles.length; i++){
+                Workbook wb = WorkbookFactory.create(multipartFiles[i].getInputStream());
+
+                // 输出源文件名称 就是指上传前的文件名称
+                System.out.println("uploadFile:" + multipartFiles[i].getOriginalFilename());
+                // 创建文件(MultipartFile转File)
+                String saveRoot = "f:\\";
+                File file = new File(saveRoot + multipartFiles[i].getOriginalFilename());
+                InputStream in  = multipartFiles[i].getInputStream();
+                OutputStream os = new FileOutputStream(file);
+                byte[] buffer = new byte[4096];
+                int n;
+                while ((n = in.read(buffer,0,4096)) != -1){
+                    os.write(buffer,0,n);
+                }
+                in.close();
+                os.close();
+            }
+            //输出其他字段
+            String name = request.getParameter("name");
+            System.out.println("name:"+name);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            result.put("msg", e.getMessage());
+            result.put("flag", "fail");
+        }
+        result.put("flag", "success");
+        result.put("msg", "success");
+
+        return result.toString();
     }
 }
 
