@@ -18,13 +18,13 @@ import java.io.OutputStream;
 public class LoginController {
 
     /* 获取验证码 */
-    @RequestMapping(params = "getSecurityImage")
+    @RequestMapping("getSecurityImage")
     public void getSecurityImage(HttpServletResponse response, HttpServletRequest request) {
         HttpSession session = request.getSession();
         OutputStream os = null;
         try {
             os = response.getOutputStream();
-            String data = "1111";//实际情况是由业务层随机生成
+            String data = SecurityCodeCreater.getRandString();//实际情况是由业务层随机生成,并存起来，以便用户登录比对
             session.setAttribute("code", data);
             ImageIO.write(SecurityCodeCreater.getImage(data), "jpg", os);
         } catch (Exception err) {
