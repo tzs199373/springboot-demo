@@ -1,9 +1,14 @@
-package com.commonutils.util.base64;
+package com.commonutils.util.security;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import javax.crypto.Cipher;
-import java.security.*;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.security.Security;
+import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -11,10 +16,14 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.Cipher;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 /**
- * RSAï¿½ï¿½ï¿½Ü¹ï¿½ï¿½ï¿½
+ * RSA¼ÓÃÜ¹¤¾ß
  */
-public class RSAUtils {
+public class RSAUtils{
 	public static final String KEY_ALGORITHM = "RSA";
 	public static final String SIGNATURE_ALGORITHM = "MD5withRSA";
 	public static final String PADDING="RSA/None/PKCS1Padding";
@@ -22,16 +31,16 @@ public class RSAUtils {
 	private static final String PUBLIC_KEY = "RSAPublicKey";
 	private static final String PRIVATE_KEY = "RSAPrivateKey";
 
-	private static final int KEY_SIZE = 1024;  //  ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½1024ï¿½ï¿½ï¿½î³¤ï¿½ï¿½ï¿½ï¿½117ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½
+	private static final int KEY_SIZE = 1024;  //  ÃØÔ¿³¤¶È1024£¬×î³¤¼ÓÃÜ117×Ö½ÚÃ÷ÎÄ
 
 	static{
 		Security.addProvider(new BouncyCastleProvider());
 	}
 	/**
-	 * ï¿½ï¿½Ë½Ô¿ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç©ï¿½ï¿½
+	 * ÓÃË½Ô¿¶ÔÐÅÏ¢Éú³ÉÊý×ÖÇ©Ãû
 	 *
 	 * @param data
-	 *            ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 *            ¼ÓÃÜÊý¾Ý
 	 * @param privateKey
 	 *            Ë½Ô¿
 	 *
@@ -39,19 +48,19 @@ public class RSAUtils {
 	 * @throws Exception
 	 */
 	public static String sign(byte[] data, String privateKey) throws Exception {
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½base64ï¿½ï¿½ï¿½ï¿½ï¿½Ë½Ô¿
+		// ½âÃÜÓÉbase64±àÂëµÄË½Ô¿
 		byte[] keyBytes = decryptBASE64(privateKey);
 
-		// ï¿½ï¿½ï¿½ï¿½PKCS8EncodedKeySpecï¿½ï¿½ï¿½ï¿½
+		// ¹¹ÔìPKCS8EncodedKeySpec¶ÔÏó
 		PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
 
-		// KEY_ALGORITHM Ö¸ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ã·¨
+		// KEY_ALGORITHM Ö¸¶¨µÄ¼ÓÃÜËã·¨
 		KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
 
-		// È¡Ë½Ô¿ï¿½×¶ï¿½ï¿½ï¿½
+		// È¡Ë½Ô¿³×¶ÔÏó
 		PrivateKey priKey = keyFactory.generatePrivate(pkcs8KeySpec);
 
-		// ï¿½ï¿½Ë½Ô¿ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç©ï¿½ï¿½
+		// ÓÃË½Ô¿¶ÔÐÅÏ¢Éú³ÉÊý×ÖÇ©Ãû
 		Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
 		signature.initSign(priKey);
 		signature.update(data);
@@ -60,7 +69,7 @@ public class RSAUtils {
 	}
 
 	/**
-	 * BASE64ï¿½ï¿½ï¿½ï¿½
+	 * BASE64¼ÓÃÜ
 	 *
 	 * @param key
 	 * @return
@@ -71,7 +80,7 @@ public class RSAUtils {
 	}
 
 	/**
-	 * BASE64ï¿½ï¿½ï¿½ï¿½
+	 * BASE64½âÃÜ
 	 *
 	 * @param key
 	 * @return
@@ -82,45 +91,45 @@ public class RSAUtils {
 	}
 
 	/**
-	 * Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç©ï¿½ï¿½
+	 * Ð£ÑéÊý×ÖÇ©Ãû
 	 *
 	 * @param data
-	 *            ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	 *            ¼ÓÃÜÊý¾Ý
 	 * @param publicKey
-	 *            ï¿½ï¿½Ô¿
+	 *            ¹«Ô¿
 	 * @param sign
-	 *            ï¿½ï¿½ï¿½ï¿½Ç©ï¿½ï¿½
+	 *            Êý×ÖÇ©Ãû
 	 *
-	 * @return Ð£ï¿½ï¿½É¹ï¿½ï¿½ï¿½ï¿½ï¿½true Ê§ï¿½Ü·ï¿½ï¿½ï¿½false
+	 * @return Ð£Ñé³É¹¦·µ»Øtrue Ê§°Ü·µ»Øfalse
 	 * @throws Exception
 	 *
 	 */
 	public static boolean verify(byte[] data, String publicKey, String sign)
 			throws Exception {
 
-		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½base64ï¿½ï¿½ï¿½ï¿½Ä¹ï¿½Ô¿
+		// ½âÃÜÓÉbase64±àÂëµÄ¹«Ô¿
 		byte[] keyBytes = decryptBASE64(publicKey);
 
-		// ï¿½ï¿½ï¿½ï¿½X509EncodedKeySpecï¿½ï¿½ï¿½ï¿½
+		// ¹¹ÔìX509EncodedKeySpec¶ÔÏó
 		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
 
-		// KEY_ALGORITHM Ö¸ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ã·¨
+		// KEY_ALGORITHM Ö¸¶¨µÄ¼ÓÃÜËã·¨
 		KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
 
-		// È¡ï¿½ï¿½Ô¿ï¿½×¶ï¿½ï¿½ï¿½
+		// È¡¹«Ô¿³×¶ÔÏó
 		PublicKey pubKey = keyFactory.generatePublic(keySpec);
 
 		Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
 		signature.initVerify(pubKey);
 		signature.update(data);
 
-		// ï¿½ï¿½Ö¤Ç©ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½
+		// ÑéÖ¤Ç©ÃûÊÇ·ñÕý³£
 		return signature.verify(decryptBASE64(sign));
 	}
 
 	/**
-	 * ï¿½ï¿½ï¿½ï¿½<br>
-	 * ï¿½ï¿½Ë½Ô¿ï¿½ï¿½ï¿½ï¿½
+	 * ½âÃÜ<br>
+	 * ÓÃË½Ô¿½âÃÜ
 	 *
 	 * @param data
 	 * @param key
@@ -129,15 +138,15 @@ public class RSAUtils {
 	 */
 	public static byte[] decryptByPrivateKey(byte[] data, String key)
 			throws Exception {
-		// ï¿½ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½
+		// ¶ÔÃÜÔ¿½âÃÜ
 		byte[] keyBytes = decryptBASE64(key);
 
-		// È¡ï¿½ï¿½Ë½Ô¿
+		// È¡µÃË½Ô¿
 		PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
 		KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
 		Key privateKey = keyFactory.generatePrivate(pkcs8KeySpec);
 
-		// ï¿½ï¿½ï¿½ï¿½ï¿½Ý½ï¿½ï¿½ï¿½
+		// ¶ÔÊý¾Ý½âÃÜ
 		Cipher cipher = Cipher.getInstance(PADDING ,  BouncyCastleProvider.PROVIDER_NAME);
 		cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
@@ -145,8 +154,8 @@ public class RSAUtils {
 	}
 
 	/**
-	 * ï¿½ï¿½ï¿½ï¿½<br>
-	 * ï¿½Ã¹ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½
+	 * ½âÃÜ<br>
+	 * ÓÃ¹«Ô¿½âÃÜ
 	 *
 	 * @param data
 	 * @param key
@@ -155,15 +164,15 @@ public class RSAUtils {
 	 */
 	public static byte[] decryptByPublicKey(byte[] data, String key)
 			throws Exception {
-		// ï¿½ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½
+		// ¶ÔÃÜÔ¿½âÃÜ
 		byte[] keyBytes = decryptBASE64(key);
 
-		// È¡ï¿½Ã¹ï¿½Ô¿
+		// È¡µÃ¹«Ô¿
 		X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
 		KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
 		Key publicKey = keyFactory.generatePublic(x509KeySpec);
 
-		// ï¿½ï¿½ï¿½ï¿½ï¿½Ý½ï¿½ï¿½ï¿½
+		// ¶ÔÊý¾Ý½âÃÜ
 		Cipher cipher = Cipher.getInstance(PADDING ,  BouncyCastleProvider.PROVIDER_NAME);
 		cipher.init(Cipher.DECRYPT_MODE, publicKey);
 
@@ -171,8 +180,8 @@ public class RSAUtils {
 	}
 
 	/**
-	 * ï¿½ï¿½ï¿½ï¿½<br>
-	 * ï¿½Ã¹ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½
+	 * ¼ÓÃÜ<br>
+	 * ÓÃ¹«Ô¿¼ÓÃÜ
 	 *
 	 * @param data
 	 * @param key
@@ -181,15 +190,15 @@ public class RSAUtils {
 	 */
 	public static byte[] encryptByPublicKey(byte[] data, String key)
 			throws Exception {
-		// ï¿½Ô¹ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½
+		// ¶Ô¹«Ô¿½âÃÜ
 		byte[] keyBytes = decryptBASE64(key);
 
-		// È¡ï¿½Ã¹ï¿½Ô¿
+		// È¡µÃ¹«Ô¿
 		X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
 		KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
 		Key publicKey = keyFactory.generatePublic(x509KeySpec);
 
-		// ï¿½ï¿½ï¿½ï¿½ï¿½Ý¼ï¿½ï¿½ï¿½
+		// ¶ÔÊý¾Ý¼ÓÃÜ
 		Cipher cipher = Cipher.getInstance(PADDING ,  BouncyCastleProvider.PROVIDER_NAME);
 		cipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
@@ -197,8 +206,8 @@ public class RSAUtils {
 	}
 
 	/**
-	 * ï¿½ï¿½ï¿½ï¿½<br>
-	 * ï¿½ï¿½Ë½Ô¿ï¿½ï¿½ï¿½ï¿½
+	 * ¼ÓÃÜ<br>
+	 * ÓÃË½Ô¿¼ÓÃÜ
 	 *
 	 * @param data
 	 * @param key
@@ -207,15 +216,15 @@ public class RSAUtils {
 	 */
 	public static byte[] encryptByPrivateKey(byte[] data, String key)
 			throws Exception {
-		// ï¿½ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½
+		// ¶ÔÃÜÔ¿½âÃÜ
 		byte[] keyBytes = decryptBASE64(key);
 
-		// È¡ï¿½ï¿½Ë½Ô¿
+		// È¡µÃË½Ô¿
 		PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
 		KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
 		Key privateKey = keyFactory.generatePrivate(pkcs8KeySpec);
 
-		// ï¿½ï¿½ï¿½ï¿½ï¿½Ý¼ï¿½ï¿½ï¿½
+		// ¶ÔÊý¾Ý¼ÓÃÜ
 		Cipher cipher = Cipher.getInstance(PADDING ,  BouncyCastleProvider.PROVIDER_NAME);
 		cipher.init(Cipher.ENCRYPT_MODE, privateKey);
 
@@ -223,7 +232,7 @@ public class RSAUtils {
 	}
 
 	/**
-	 * È¡ï¿½ï¿½Ë½Ô¿(BASE64ï¿½ï¿½ï¿½ï¿½)
+	 * È¡µÃË½Ô¿(BASE64±àÂë)
 	 *
 	 * @param keyMap
 	 * @return
@@ -237,7 +246,7 @@ public class RSAUtils {
 	}
 
 	/**
-	 * È¡ï¿½Ã¹ï¿½Ô¿(BASE64ï¿½ï¿½ï¿½ï¿½)
+	 * È¡µÃ¹«Ô¿(BASE64±àÂë)
 	 *
 	 * @param keyMap
 	 * @return
@@ -251,7 +260,7 @@ public class RSAUtils {
 	}
 
 	/**
-	 * ï¿½Ð¶ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½Ç·ñ±»¹ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½
+	 * ÅÐ¶Ï×Ö·û´®ÊÇ·ñ±»¹«Ô¿¼ÓÃÜ
 	 * @param text
 	 * @param privateKey
 	 * @return
@@ -259,8 +268,8 @@ public class RSAUtils {
 	public static boolean isTextEncryptByPublicKey(String text , String privateKey){
 		boolean bol = true;
 		try{
-			 byte[] encryBytes = RSAUtils.decryptBASE64(text);
-			 RSAUtils.decryptByPrivateKey(encryBytes, privateKey);
+			byte[] encryBytes = RSAUtils.decryptBASE64(text);
+			RSAUtils.decryptByPrivateKey(encryBytes, privateKey);
 		}catch(Exception e){
 			bol = false;
 		}
@@ -268,7 +277,7 @@ public class RSAUtils {
 	}
 
 	/**
-	 * ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ô¿
+	 * ³õÊ¼»¯ÃÜÔ¿
 	 *
 	 * @return
 	 * @throws Exception
@@ -279,7 +288,7 @@ public class RSAUtils {
 
 		KeyPair keyPair = keyPairGen.generateKeyPair();
 
-		// ï¿½ï¿½Ô¿
+		// ¹«Ô¿
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
 
 		// Ë½Ô¿
@@ -297,8 +306,8 @@ public class RSAUtils {
 		Map<String ,Object> keyMap = RSAUtils.initKey();
 		String pubKey = RSAUtils.getPublicKey(keyMap);
 		String privateKey = RSAUtils.getPrivateKey(keyMap);
-		System.out.println("ï¿½ï¿½Ô¿ï¿½ï¿½" + pubKey);
-		System.out.println("Ë½Ô¿ï¿½ï¿½" + privateKey);
+		System.out.println("¹«Ô¿£º" + pubKey);
+		System.out.println("Ë½Ô¿£º" + privateKey);
 
 		/*privateKey = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIQaJdHElc4xDv/19ZDX+c3IksIL"+
 				"gadKdoKWqQsYyaeGW6vRNm4jhXikn50BB9zVgJBgvvyGN5tJFqQ5YauiR93nyKUoP/WL51t/oGb5"+
@@ -319,11 +328,11 @@ public class RSAUtils {
 
 
 		String text = "admin";
-		System.out.println("ï¿½ï¿½ï¿½Ä³ï¿½ï¿½È£ï¿½" + text.length());
+		System.out.println("Ã÷ÎÄ³¤¶È£º" + text.length());
 		byte[] eb = RSAUtils.encryptByPublicKey(text.getBytes(), pubKey);
 		String encStr = RSAUtils.encryptBASE64(eb).replace("\r\n", "");
 		System.out.println(encStr);
-		
+
 		byte[] encryBytes = RSAUtils.decryptBASE64(encStr);
 		byte[] decryBytes = RSAUtils.decryptByPrivateKey(encryBytes, privateKey);
 		System.out.println(new String(decryBytes));
