@@ -82,7 +82,6 @@ public class QrCodeUtil {
                 try {
                     baos.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
         }
@@ -146,13 +145,11 @@ public class QrCodeUtil {
 
     public static void main(String[] args){
         try {
-            FileOutputStream fos = new FileOutputStream("ab.png");
+            FileOutputStream fos = new FileOutputStream("F:\\QRcode.png");//测试生成的路径
             fos.write(createQrCode("test"));
             fos.close();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 }
