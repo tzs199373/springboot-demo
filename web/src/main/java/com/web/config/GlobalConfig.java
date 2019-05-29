@@ -13,7 +13,6 @@ public class GlobalConfig {
     public WebServerFactoryCustomizer<TomcatServletWebServerFactory> customizer() {
         return (factory) -> {
             factory.addContextCustomizers((context) -> {
-                        //ģ����webapp���·��
                         String relativePath = "web/src/main/webapp";
                         File docBaseFile = new File(relativePath);
                         if (docBaseFile.exists()) {

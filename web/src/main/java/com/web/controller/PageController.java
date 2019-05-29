@@ -18,9 +18,9 @@ public class PageController {
         return "websocket2";
     }
 
-    @RequestMapping(value = "/index")
+    @RequestMapping(value = "/login.htm")
     public String test(){
-        return "index";
+        return "login";
     }
 
     @RequestMapping(value = "/fileUpload")
