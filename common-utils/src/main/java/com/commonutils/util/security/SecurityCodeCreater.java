@@ -32,17 +32,6 @@ public class SecurityCodeCreater {
             '8', '9'
     };
 
-//    public static  void main(String[] args)throws Exception
-//    {
-//
-//	     //此main方法用来测试生成的验证码图像
-//
-//	     FileOutputStream fos = new FileOutputStream("c://test.jpg");
-//	     JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(fos);
-//	     encoder.encode(getImage(getRandString()));
-//    }
-
-
     private static Random random = new Random();
 
     /**
