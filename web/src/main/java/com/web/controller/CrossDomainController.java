@@ -13,6 +13,7 @@ public class CrossDomainController {
     @RequestMapping(value="/getData")
     public void getData(HttpServletRequest request,HttpServletResponse response){
         String callback = request.getParameter("callback");
+        System.out.println(callback);
         String data = "{\"flag\":true,\"msg\":\"success\"}";//返回的json格式数据
         PrintWriter out = null;
         try {
