@@ -23,5 +23,12 @@
 </head>
 <body>
 <img id="code_img" src="http://localhost:8080/login/getSecurityImage" class="imgCode" title="点击刷新验证码">
+<script src="js/jquery.min.js"></script>
+<script type="text/javascript">
+    /*切换验证码*/
+    $("#code_img").click(function() {
+        this.setAttribute('src', 'http://localhost:8080/login/getSecurityImage?' + Math.random());//此处需要随机数触发src的变化，否则不发送请求
+    });
+</script>
 </body>
 </html>
