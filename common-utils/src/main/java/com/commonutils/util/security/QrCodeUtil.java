@@ -28,10 +28,6 @@ public class QrCodeUtil {
     private static final String DEFAULT_QR_FORMAT = "png";
     private static final byte[] EMPTY_BYTES = new byte[0];
 
-    public static byte[] createQrCode(String content, int size, String extension) {
-        return createQrCode(content, size, extension, null);
-    }
-
     /**
      * 生成带图片的二维码
      * @param content  二维码中要包含的信息
@@ -77,6 +73,7 @@ public class QrCodeUtil {
 
             return baos.toByteArray();
         } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if(baos != null)
                 try {
@@ -86,6 +83,14 @@ public class QrCodeUtil {
                 }
         }
         return EMPTY_BYTES;
+    }
+
+    public static byte[] createQrCode(String content, int size, String extension) {
+        return createQrCode(content, size, extension, null);
+    }
+
+    public static byte[] createQrCode(String content) {
+        return createQrCode(content, DEFAULT_QR_SIZE, DEFAULT_QR_FORMAT);
     }
 
     /**
@@ -137,10 +142,6 @@ public class QrCodeUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static byte[] createQrCode(String content) {
-        return createQrCode(content, DEFAULT_QR_SIZE, DEFAULT_QR_FORMAT);
     }
 
     public static void main(String[] args){
