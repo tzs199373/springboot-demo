@@ -13,7 +13,7 @@ import java.util.Iterator;
 public class JsonUtils {
 
     /**
-     * ï¿½ï¿½ï¿½ó·µ»ï¿½Jsonï¿½Ö·ï¿½ï¿½ï¿½
+     * ¶ÔÏó·µ»ØJson×Ö·û´®
      * @param obj
      * @param <T>
      * @return
@@ -31,7 +31,7 @@ public class JsonUtils {
     }
 
     /**
-     * ï¿½ï¿½ï¿½ó·µ»Ø¸ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½Jsonï¿½Ö·ï¿½ï¿½ï¿½
+     * ¶ÔÏó·µ»Ø¸ñÊ½»¯ºóµÄJson×Ö·û´®
      * @param obj
      * @param <T>
      * @return
@@ -49,7 +49,7 @@ public class JsonUtils {
     }
 
     /**
-     * Jsonï¿½Ö·ï¿½ï¿½ï¿½×ªï¿½É¶ï¿½ï¿½ï¿½
+     * Json×Ö·û´®×ª³É¶ÔÏó
      * @param str
      * @param clazz
      * @param <T>
@@ -67,9 +67,9 @@ public class JsonUtils {
     }
 
     /**
-     * ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½Ð»ï¿½
+     * ·ºÐÍ·´ÐòÁÐ»¯
      * @param str
-     * @param typeReference ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+     * @param typeReference ¶ÔÓ¦·µ»ØÖµµÄÀàÐÍ
      * @param <T>
      * @return
      */
@@ -87,10 +87,10 @@ public class JsonUtils {
     }
 
     /**
-     * ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½Ð»ï¿½
+     * ·ºÐÍ·´ÐòÁÐ»¯
      * @param str
-     * @param collectionClass ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½
-     * @param elementClasses ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
+     * @param collectionClass ¼¯ºÏµÄÀàÐÍ
+     * @param elementClasses ¼¯ºÏÖÐÔªËØµÄÀàÐÍ
      * @param <T>
      * @return
      */
@@ -127,7 +127,7 @@ public class JsonUtils {
     }
 
     /**
-     * json×ªurlï¿½ï¿½ï¿½ï¿½
+     * json×ªurl²ÎÊý
      * @param url
      * @param json
      * @return
@@ -156,7 +156,7 @@ public class JsonUtils {
     }
 
     /**
-     * json×ªurlï¿½ï¿½ï¿½ï¿½
+     * json×ªurl²ÎÊý
      * @param url
      * @param jsonStr
      * @return
