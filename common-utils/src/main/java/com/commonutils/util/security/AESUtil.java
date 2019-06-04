@@ -9,51 +9,51 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 
 /**
- * AESåŠ å¯†å·¥å…·
+ * AES¼ÓÃÜ¹¤¾ß
  */
 public class AESUtil {
     /**
      *
-     * @param EncryptRule ç§˜é’¥
-     * @param Content åŠ å¯†å†…å®¹
-     * @return base64å¯†æ–‡
+     * @param EncryptRule ÃØÔ¿
+     * @param Content ¼ÓÃÜÄÚÈİ
+     * @return base64ÃÜÎÄ
      */
     public static String Encrypt(String EncryptRule,String  Content) {
         try {
-            //1.æ„é€ å¯†é’¥ç”Ÿæˆå™¨ï¼ŒæŒ‡å®šä¸ºAESç®—æ³•,ä¸åŒºåˆ†å¤§å°å†™
+            //1.¹¹ÔìÃÜÔ¿Éú³ÉÆ÷£¬Ö¸¶¨ÎªAESËã·¨,²»Çø·Ö´óĞ¡Ğ´
             KeyGenerator Keygen=KeyGenerator.getInstance("AES");
 
-            //2.æ ¹æ®Keyåˆå§‹åŒ–å¯†é’¥ç”Ÿæˆå™¨
-            //ç”Ÿæˆä¸€ä¸ª128ä½çš„éšæœºæº,æ ¹æ®ä¼ å…¥çš„å­—èŠ‚æ•°ç»„
+            //2.¸ù¾İKey³õÊ¼»¯ÃÜÔ¿Éú³ÉÆ÷
+            //Éú³ÉÒ»¸ö128Î»µÄËæ»úÔ´,¸ù¾İ´«ÈëµÄ×Ö½ÚÊı×é
             SecureRandom Random = SecureRandom.getInstance("SHA1PRNG");
             Random.setSeed(EncryptRule.getBytes());
             Keygen.init(128, Random);
 
-            //3.äº§ç”ŸåŸå§‹å¯¹ç§°å¯†é’¥
+            //3.²úÉúÔ­Ê¼¶Ô³ÆÃÜÔ¿
             SecretKey Original_Key=Keygen.generateKey();
 
-            //4.è·å¾—åŸå§‹å¯¹ç§°å¯†é’¥çš„å­—èŠ‚æ•°ç»„
+            //4.»ñµÃÔ­Ê¼¶Ô³ÆÃÜÔ¿µÄ×Ö½ÚÊı×é
             byte [] Raw=Original_Key.getEncoded();
 
-            //5.æ ¹æ®å­—èŠ‚æ•°ç»„ç”ŸæˆAESå¯†é’¥
+            //5.¸ù¾İ×Ö½ÚÊı×éÉú³ÉAESÃÜÔ¿
             SecretKey Key=new SecretKeySpec(Raw, "AES");
 
-            //6.æ ¹æ®æŒ‡å®šç®—æ³•AESè‡ªæˆå¯†ç å™¨
+            //6.¸ù¾İÖ¸¶¨Ëã·¨AES×Ô³ÉÃÜÂëÆ÷
             Cipher CipherInstance=Cipher.getInstance("AES");
 
-            //7.åˆå§‹åŒ–å¯†ç å™¨ï¼Œç¬¬ä¸€ä¸ªå‚æ•°ä¸ºåŠ å¯†(Encrypt_mode)æˆ–è€…è§£å¯†è§£å¯†(Decrypt_mode)æ“ä½œï¼Œç¬¬äºŒä¸ªå‚æ•°ä¸ºä½¿ç”¨çš„KEY
+            //7.³õÊ¼»¯ÃÜÂëÆ÷£¬µÚÒ»¸ö²ÎÊıÎª¼ÓÃÜ(Encrypt_mode)»òÕß½âÃÜ½âÃÜ(Decrypt_mode)²Ù×÷£¬µÚ¶ş¸ö²ÎÊıÎªÊ¹ÓÃµÄKEY
             CipherInstance.init(Cipher.ENCRYPT_MODE, Key);
 
-            //8.è·å–åŠ å¯†å†…å®¹çš„å­—èŠ‚æ•°ç»„(è¿™é‡Œè¦è®¾ç½®ä¸ºutf-8)ä¸ç„¶å†…å®¹ä¸­å¦‚æœæœ‰ä¸­æ–‡å’Œè‹±æ–‡æ··åˆä¸­æ–‡å°±ä¼šè§£å¯†ä¸ºä¹±ç 
+            //8.»ñÈ¡¼ÓÃÜÄÚÈİµÄ×Ö½ÚÊı×é(ÕâÀïÒªÉèÖÃÎªutf-8)²»È»ÄÚÈİÖĞÈç¹ûÓĞÖĞÎÄºÍÓ¢ÎÄ»ìºÏÖĞÎÄ¾Í»á½âÃÜÎªÂÒÂë
             byte [] Byte_Encode=Content.getBytes("utf-8");
 
-            //9.æ ¹æ®å¯†ç å™¨çš„åˆå§‹åŒ–æ–¹å¼--åŠ å¯†ï¼šå°†æ•°æ®åŠ å¯†
+            //9.¸ù¾İÃÜÂëÆ÷µÄ³õÊ¼»¯·½Ê½--¼ÓÃÜ£º½«Êı¾İ¼ÓÃÜ
             byte [] Byte_AES=CipherInstance.doFinal(Byte_Encode);
 
-            //10.å°†åŠ å¯†åçš„æ•°æ®è½¬æ¢ä¸ºå­—ç¬¦ä¸²
+            //10.½«¼ÓÃÜºóµÄÊı¾İ×ª»»Îª×Ö·û´®
             String AES_encode= Base64.encodeBase64URLSafeString(Byte_AES);
 
-            //11.å°†å­—ç¬¦ä¸²è¿”å›
+            //11.½«×Ö·û´®·µ»Ø
             return AES_encode;
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,41 +63,41 @@ public class AESUtil {
 
     /**
      *
-     * @param DecryptRule ç§˜é’¥
-     * @param Content   Encryptæ–¹æ³•ç”Ÿæˆçš„å¯†æ–‡
-     * @return åŸæ–‡
+     * @param DecryptRule ÃØÔ¿
+     * @param Content   Encrypt·½·¨Éú³ÉµÄÃÜÎÄ
+     * @return Ô­ÎÄ
      */
     public static String Decrypt(String DecryptRule,String  Content) {
         try {
-            //1.æ„é€ å¯†é’¥ç”Ÿæˆå™¨ï¼ŒæŒ‡å®šä¸ºAESç®—æ³•,ä¸åŒºåˆ†å¤§å°å†™
+            //1.¹¹ÔìÃÜÔ¿Éú³ÉÆ÷£¬Ö¸¶¨ÎªAESËã·¨,²»Çø·Ö´óĞ¡Ğ´
             KeyGenerator Keygen=KeyGenerator.getInstance("AES");
 
-            //2.æ ¹æ®DecryptRuleè§„åˆ™åˆå§‹åŒ–å¯†é’¥ç”Ÿæˆå™¨
-            //ç”Ÿæˆä¸€ä¸ª128ä½çš„éšæœºæº,æ ¹æ®ä¼ å…¥çš„å­—èŠ‚æ•°ç»„
+            //2.¸ù¾İDecryptRule¹æÔò³õÊ¼»¯ÃÜÔ¿Éú³ÉÆ÷
+            //Éú³ÉÒ»¸ö128Î»µÄËæ»úÔ´,¸ù¾İ´«ÈëµÄ×Ö½ÚÊı×é
             SecureRandom Random = SecureRandom.getInstance("SHA1PRNG");
             Random.setSeed(DecryptRule.getBytes());
             Keygen.init(128, Random);
 
-            //3.äº§ç”ŸåŸå§‹å¯¹ç§°å¯†é’¥
+            //3.²úÉúÔ­Ê¼¶Ô³ÆÃÜÔ¿
             SecretKey Original_Key=Keygen.generateKey();
 
-            //4.è·å¾—åŸå§‹å¯¹ç§°å¯†é’¥çš„å­—èŠ‚æ•°ç»„
+            //4.»ñµÃÔ­Ê¼¶Ô³ÆÃÜÔ¿µÄ×Ö½ÚÊı×é
             byte [] Raw=Original_Key.getEncoded();
 
-            //5.æ ¹æ®å­—èŠ‚æ•°ç»„ç”ŸæˆAESå¯†é’¥
+            //5.¸ù¾İ×Ö½ÚÊı×éÉú³ÉAESÃÜÔ¿
             SecretKey Key=new SecretKeySpec(Raw, "AES");
 
-            //6.æ ¹æ®æŒ‡å®šç®—æ³•AESè‡ªæˆå¯†ç å™¨
+            //6.¸ù¾İÖ¸¶¨Ëã·¨AES×Ô³ÉÃÜÂëÆ÷
             Cipher CipherInstance=Cipher.getInstance("AES");
 
-            //7.åˆå§‹åŒ–å¯†ç å™¨ï¼Œç¬¬ä¸€ä¸ªå‚æ•°ä¸ºåŠ å¯†(Encrypt_mode)æˆ–è€…è§£å¯†(Decrypt_mode)æ“ä½œï¼Œç¬¬äºŒä¸ªå‚æ•°ä¸ºä½¿ç”¨çš„KEY
+            //7.³õÊ¼»¯ÃÜÂëÆ÷£¬µÚÒ»¸ö²ÎÊıÎª¼ÓÃÜ(Encrypt_mode)»òÕß½âÃÜ(Decrypt_mode)²Ù×÷£¬µÚ¶ş¸ö²ÎÊıÎªÊ¹ÓÃµÄKEY
             CipherInstance.init(Cipher.DECRYPT_MODE, Key);
 
-            //8.å°†åŠ å¯†å¹¶è§£ç åçš„å†…å®¹è§£ç æˆå­—èŠ‚æ•°ç»„
+            //8.½«¼ÓÃÜ²¢½âÂëºóµÄÄÚÈİ½âÂë³É×Ö½ÚÊı×é
             byte [] Byte_Content= Base64.decodeBase64(Content);
 
 			/*
-			 * è§£å¯†
+			 * ½âÃÜ
 			 */
             byte [] Byte_Decode=CipherInstance.doFinal(Byte_Content);
             String AES_decode=new String(Byte_Decode,"utf-8");
@@ -112,14 +112,14 @@ public class AESUtil {
     public static void main(String[] args) {
         String content = "{\"UserName\":\"18516094389\",\"Password\":\"123456\"}";
         String password = "S2V5QnlYWFdGcm9tQm9XdVl1bg==";
-        System.out.println("åŠ å¯†ä¹‹å‰ï¼š" + content);
+        System.out.println("¼ÓÃÜÖ®Ç°£º" + content);
 
-        // åŠ å¯†
+        // ¼ÓÃÜ
         String encrypt = Encrypt(password,content);
-        System.out.println("åŠ å¯†åçš„å†…å®¹ï¼š" + encrypt);
+        System.out.println("¼ÓÃÜºóµÄÄÚÈİ£º" + encrypt);
 
-        // è§£å¯†
+        // ½âÃÜ
         String decrypt = Decrypt(password,encrypt);
-        System.out.println("è§£å¯†åçš„å†…å®¹ï¼š" + decrypt);
+        System.out.println("½âÃÜºóµÄÄÚÈİ£º" + decrypt);
     }
 }
