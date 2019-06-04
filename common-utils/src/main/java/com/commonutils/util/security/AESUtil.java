@@ -114,6 +114,8 @@ public class AESUtil {
         JSONObject json = new JSONObject();
         json.element("UserName","18516094389");
         json.element("Password","123456");
+        json.element("CellPhone","18516094389");
+        json.element("NickName","18516094389");
 //        String content = "{\"UserName\":\"18516094389\",\"Password\":\"123456\"}";
         String content = json.toString();
         String password = "S2V5QnlYWFdGcm9tQm9XdVl1bg==";
