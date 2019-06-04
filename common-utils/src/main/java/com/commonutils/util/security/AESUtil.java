@@ -1,5 +1,6 @@
 package com.commonutils.util.security;
 
+import com.commonutils.util.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Cipher;
@@ -18,7 +19,7 @@ public class AESUtil {
      * @param Content 加密内容
      * @return base64密文
      */
-    public static String Encrypt(String EncryptRule,String  Content) {
+    public static String Encrypt(String EncryptRule,String Content) {
         try {
             //1.构造密钥生成器，指定为AES算法,不区分大小写
             KeyGenerator Keygen=KeyGenerator.getInstance("AES");
@@ -67,7 +68,7 @@ public class AESUtil {
      * @param Content   Encrypt方法生成的密文
      * @return 原文
      */
-    public static String Decrypt(String DecryptRule,String  Content) {
+    public static String Decrypt(String DecryptRule,String Content) {
         try {
             //1.构造密钥生成器，指定为AES算法,不区分大小写
             KeyGenerator Keygen=KeyGenerator.getInstance("AES");
@@ -110,7 +111,11 @@ public class AESUtil {
     }
 
     public static void main(String[] args) {
-        String content = "{\"UserName\":\"18516094389\",\"Password\":\"123456\"}";
+        JSONObject json = new JSONObject();
+        json.element("UserName","18516094389");
+        json.element("Password","123456");
+//        String content = "{\"UserName\":\"18516094389\",\"Password\":\"123456\"}";
+        String content = json.toString();
         String password = "S2V5QnlYWFdGcm9tQm9XdVl1bg==";
         System.out.println("加密之前：" + content);
 
