@@ -2,7 +2,7 @@ package com.engine.dao;
 
 
 import com.commonutils.util.validate.ObjectCensor;
-import com.engine.jdbcTemplate.BaseRepository;
+import com.engine.beanFactory.BaseRepository;
 import com.engine.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

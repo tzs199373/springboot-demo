@@ -1,6 +1,6 @@
-package com.engine.jdbcTemplate;
+package com.engine.beanFactory;
 
-import com.engine.beanFactory.BeanFactoryHelper;
+import com.engine.jdbcTemplate.QryCenter;
 
 public interface BaseRepository {
 

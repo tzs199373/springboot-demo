@@ -1,5 +1,6 @@
-package com.engine.jdbcTemplate;
+package com.engine.config;
 
+import com.engine.jdbcTemplate.QryCenter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
