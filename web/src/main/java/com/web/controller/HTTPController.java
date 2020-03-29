@@ -9,9 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by asus on 2019/3/5.
- */
 @RestController
 public class HTTPController {
     private static Map<String,String> headMap = new HashMap<String,String>();
