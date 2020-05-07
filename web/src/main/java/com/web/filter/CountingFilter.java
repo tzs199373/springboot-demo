@@ -16,13 +16,13 @@ public class CountingFilter implements Filter{
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        indicator.newRequestReceived();
+        System.out.println("requestConut£º"+indicator.newRequestReceived());
         filterChain.doFilter(servletRequest,servletResponse);
         int statusCode = ((HttpServletResponse) servletResponse).getStatus();
         if(0 == statusCode || 2 == statusCode/100){
-            indicator.newRequestProcessed();
+            System.out.println("successConut£º"+indicator.newRequestProcessed());
         }else{
-            indicator.requestProcessedFailed();
+            System.out.println("failureConut£º"+indicator.requestProcessedFailed());
         }
     }
 

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * Created by asus on 2019/4/1.
  */
 @Controller
+@RequestMapping("/page")
 public class PageController {
     @RequestMapping ("/web1")
     public String websocket(){

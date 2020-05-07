@@ -8,10 +8,5 @@
 RequestCount:<%= Indicator.getINSTANCE().getRequestCount()%><br/>
 SuccessCount:<%= Indicator.getINSTANCE().getSuccessCount()%><br/>
 FailureCount:<%= Indicator.getINSTANCE().getFailureCount()%><br/>
-
-<script src="js/jquery.min.js"></script>
-<script type="text/javascript">
-
-</script>
 </body>
 </html>

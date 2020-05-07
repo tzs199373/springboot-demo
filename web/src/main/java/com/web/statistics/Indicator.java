@@ -22,16 +22,16 @@ public class Indicator{
         return INSTANCE;
     }
 
-    public void newRequestReceived(){
-        requestConut.incrementAndGet();
+    public long newRequestReceived(){
+        return requestConut.incrementAndGet();
     }
 
-    public void newRequestProcessed(){
-        successConut.incrementAndGet();
+    public long newRequestProcessed(){
+        return successConut.incrementAndGet();
     }
 
-    public void requestProcessedFailed(){
-        failureConut.incrementAndGet();
+    public long requestProcessedFailed(){
+        return failureConut.incrementAndGet();
     }
 
     public long getRequestCount(){
