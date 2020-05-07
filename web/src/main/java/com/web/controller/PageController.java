@@ -43,4 +43,9 @@ public class PageController {
         return "sse2";
     }
 
+    @RequestMapping("/count")
+    public String countpage() {
+        return "requestCount";
+    }
+
 }
