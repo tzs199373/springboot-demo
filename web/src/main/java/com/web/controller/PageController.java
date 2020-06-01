@@ -49,4 +49,9 @@ public class PageController {
         return "requestCount";
     }
 
+    @RequestMapping("/pay")
+    public String pay() {
+        return "pay";
+    }
+
 }
