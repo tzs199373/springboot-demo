@@ -1,4 +1,4 @@
-package com.web.test;
+package com.web.stater;
 
 import com.example.helloworld.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
