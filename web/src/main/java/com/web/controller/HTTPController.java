@@ -5,8 +5,11 @@ import com.commonutils.util.json.JSONArray;
 import com.commonutils.util.json.JSONObject;
 import com.web.async.AsyncService;
 import com.web.model.Bill;
+import com.web.service.ProtoTypeService;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +26,8 @@ public class HTTPController {
 
     @Autowired
     private AsyncService asyncService;
+    @Autowired
+    private ObjectFactory<ProtoTypeService> protoTypeServiceObjectFactory;
 
     static{
 //        headMap.put("Content-Type", "application/json;charset=UTF-8");
@@ -55,6 +60,13 @@ public class HTTPController {
         return remoteAddr;
     }
 
+    @RequestMapping("/prototype")
+    public String testprototype(String msg, HttpServletRequest request,HttpServletResponse response) throws Exception{
+        String remoteAddr = request.getRemoteAddr();
+        System.out.println(protoTypeServiceObjectFactory.getObject());
+        protoTypeServiceObjectFactory.getObject().hello();
+        return remoteAddr;
+    }
 
 }
 
