@@ -16,12 +16,12 @@ public class TestRunner implements CommandLineRunner {
     @Override
     public void run(String... strings) throws Exception {
         //使用容器获取bean
-        for (int i = 0; i < 2; i++) {
-            new Thread(() -> {
-                System.out.println(Thread.currentThread() + "," + threadScopeBeanObjectFactory.getObject());
-                System.out.println(Thread.currentThread() + "," + threadScopeBeanObjectFactory.getObject());
-            }).start();
-            TimeUnit.SECONDS.sleep(1);
-        }
+//        for (int i = 0; i < 2; i++) {
+//            new Thread(() -> {
+//                System.out.println(Thread.currentThread() + "," + threadScopeBeanObjectFactory.getObject());
+//                System.out.println(Thread.currentThread() + "," + threadScopeBeanObjectFactory.getObject());
+//            }).start();
+//            TimeUnit.SECONDS.sleep(1);
+//        }
     }
 }

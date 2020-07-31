@@ -3,6 +3,7 @@ package com.web.model;
 public class Bill {
     private String id;
     private String account;
+    private String version = "latest";
 
     public String getId() {
         return id;

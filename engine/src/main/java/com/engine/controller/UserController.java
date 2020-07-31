@@ -25,6 +25,11 @@ public class UserController {
         return u;
     }
 
+    @RequestMapping("/addUsers")
+    public void addUsers() throws Exception{
+        userService.addUsers();
+    }
+
     @RequestMapping("/findUsersByUsername")
     public User findUsersByUsername(String username){
         User u = userService.findUsersByUsername(username);

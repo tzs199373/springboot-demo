@@ -13,16 +13,16 @@ import org.slf4j.LoggerFactory;
 public class User {
     private final Logger logger = LoggerFactory.getLogger(User.class);
 
-    private int id;
+    private Integer id;
     private String username;
 
     @javax.persistence.Id
     @javax.persistence.Column(name = "id", nullable = false)
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
