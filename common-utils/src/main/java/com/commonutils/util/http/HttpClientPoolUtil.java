@@ -142,30 +142,6 @@ public class HttpClientPoolUtil {
 		return method;
 	}
 
-	public static Function getResponseString = new Function<CloseableHttpResponse,String>() {
-		@Override
-		public String apply(CloseableHttpResponse httpResponse) {
-			String str = "";
-			int httpResponseCode = httpResponse.getStatusLine().getStatusCode();//状态码
-			logger.info("httpResponseCode[{}]",httpResponseCode);
-			try {
-				str = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
-			} catch (IOException e) {
-				logger.info(e.getMessage(),e);
-			}
-			return str;
-		}
-		@Override
-		public <V> Function<V, String> compose(Function<? super V, ? extends CloseableHttpResponse> before) {
-			return null;
-		}
-		@Override
-		public <V> Function<CloseableHttpResponse, V> andThen(Function<? super String, ? extends V> after) {
-			return null;
-		}
-	};
-
-
 	/**
 	 ****************************************************** 四大基本方法*********************************************
 	 */
@@ -437,9 +413,36 @@ public class HttpClientPoolUtil {
 		}
 		return url;
 	}
-
+	/**
+	 ****************************************************** Response解析*********************************************
+	 */
+	public static Function getResponseString = new Function<CloseableHttpResponse,String>() {
+		@Override
+		public String apply(CloseableHttpResponse httpResponse) {
+			String str = "";
+			int httpResponseCode = httpResponse.getStatusLine().getStatusCode();//状态码
+			logger.info("httpResponseCode[{}]",httpResponseCode);
+			try {
+				str = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+			} catch (IOException e) {
+				logger.error(e.getMessage(),e);
+			}
+			return str;
+		}
+		@Override
+		public <V> Function<V, String> compose(Function<? super V, ? extends CloseableHttpResponse> before) {
+			return null;
+		}
+		@Override
+		public <V> Function<CloseableHttpResponse, V> andThen(Function<? super String, ? extends V> after) {
+			return null;
+		}
+	};
+	/**
+	 ****************************************************** example*********************************************
+	 */
 	public static void main(String[] args) throws Exception {
-		Object a = HttpClientPoolUtil.get("http://127.0.0.1:8081/async", new HashMap<>(),getResponseString);
-		System.out.println("======="+a);
+		Object result = HttpClientPoolUtil.get("http://127.0.0.1:8081/async", new HashMap<>(),getResponseString);
+		System.out.println("http result: " + result);
 	}
 }
