@@ -15,7 +15,12 @@ import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.FormBodyPart;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -29,11 +34,13 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -333,6 +340,45 @@ public class HttpClientPoolUtil {
 
 	/**
 	 * @param url
+	 * @param headMap		消息头，底层API会构建"Content-Type"="multipart/form-data"，不要再包含Content-Type，否则会覆盖
+	 * @param formBodyParts	消息体，普通字段以及文件
+	 * @return
+	 * @throws Exception
+	 */
+	public static <R> R postMultipartData(String url, Map<String, String> headMap, ArrayList<FormBodyPart> formBodyParts, Function<CloseableHttpResponse,R> afterResposne) throws Exception {
+		HttpEntity httpEntity = null;
+		HttpEntityEnclosingRequestBase method = null;
+		R responseBody;
+		try {
+			method = (HttpEntityEnclosingRequestBase) getRequest(url,HttpPost.METHOD_NAME,headMap);
+			MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
+			for (int i = 0; i < formBodyParts.size(); i++) {
+				multipartEntityBuilder.addPart(formBodyParts.get(i).getName(),formBodyParts.get(i).getBody());
+			}
+			httpEntity = multipartEntityBuilder.build();
+			method.setEntity(httpEntity);
+
+			HttpContext context = HttpClientContext.create();
+			CloseableHttpResponse httpResponse = httpClient.execute(method, context);
+			responseBody = afterResposne.apply(httpResponse);
+		} catch (Exception e) {
+			if(method != null){
+				method.abort();
+			}
+			throw e;
+		} finally {
+			if (httpEntity != null) {
+				try {
+					EntityUtils.consumeQuietly(httpEntity);
+				} catch (Exception e) {
+					throw e;
+				}
+			}
+		}
+		return responseBody;
+	}
+	/**
+	 * @param url
 	 * @param param		JSON字符串,将转为键值对形式追加到url后面
 	 * @param body		JSON字符串
 	 * @param headMap	消息头，内含"Content-Type"="application/x-www-form-urlencoded"
@@ -442,7 +488,22 @@ public class HttpClientPoolUtil {
 	 ****************************************************** example*********************************************
 	 */
 	public static void main(String[] args) throws Exception {
-		Object result = HttpClientPoolUtil.get("http://127.0.0.1:8081/async", new HashMap<>(),getResponseString);
+		Object result = HttpClientPoolUtil.postMultipartData("http://192.168.137.67:8080/file/upload",
+				new HashMap<String,String>(),
+				new ArrayList<FormBodyPart>(){{
+					add(new FormBodyPart(
+							"uploadFile",
+							new FileBody(
+									new File(
+											"C:\\Users\\asus\\Desktop\\log\\1.zip"),
+									ContentType.create("application/x-gzip-compressed"),
+									"1.zip")
+					));
+					add(new FormBodyPart(
+							"key",
+							new StringBody("value", ContentType.TEXT_PLAIN)
+					));
+				}},getResponseString);
 		System.out.println("http result: " + result);
 	}
 }

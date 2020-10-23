@@ -4,12 +4,6 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * @author tzs
- * @version 1.0
- * @description 下载类
- * @since 2019/4/16
- */
 public class DownLoadUtil {
     /**
      * 从网络Url中下载文件
