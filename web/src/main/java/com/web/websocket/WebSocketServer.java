@@ -11,53 +11,53 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-@ServerEndpoint(value = "/websocket/{id}")//ï¿½ï¿½ï¿½Ê·ï¿½ï¿½ï¿½Ëµï¿½urlï¿½ï¿½Ö·
+@ServerEndpoint(value = "/websocket/{id}")//·ÃÎÊ·þÎñ¶ËµÄurlµØÖ·
 public class WebSocketServer {
     private static int onlineCount = 0;
     private static ConcurrentHashMap<String, WebSocketServer> webSocketSet = new ConcurrentHashMap<>();
 
-    //ï¿½ï¿½Ä³ï¿½ï¿½ï¿½Í»ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½Ó»á»°ï¿½ï¿½ï¿½ï¿½ÒªÍ¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½Ë·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    //ÓëÄ³¸ö¿Í»§¶ËµÄÁ¬½Ó»á»°£¬ÐèÒªÍ¨¹ýËüÀ´¸ø¿Í»§¶Ë·¢ËÍÊý¾Ý
     private Session session;
     private static Logger log = LogManager.getLogger(WebSocketServer.class);
     private String id = "";
 
     /**
-     * ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½É¹ï¿½ï¿½ï¿½ï¿½ÃµÄ·ï¿½ï¿½ï¿½
+     * Á¬½Ó½¨Á¢³É¹¦µ÷ÓÃµÄ·½·¨
      * */
     @OnOpen
     public void onOpen(@PathParam(value = "id") String id, Session session) {
         this.session = session;
-        this.id = id;//ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½
-        webSocketSet.put(id, this);     //ï¿½ï¿½ï¿½ï¿½setï¿½ï¿½
-        addOnlineCount();           //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1
-        log.info("ï¿½Ã»ï¿½"+id+"ï¿½ï¿½ï¿½ë£¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª" + getOnlineCount());
+        this.id = id;//½ÓÊÕµ½·¢ËÍÏûÏ¢µÄÈËÔ±±àºÅ
+        webSocketSet.put(id, this);     //¼ÓÈësetÖÐ
+        addOnlineCount();           //ÔÚÏßÊý¼Ó1
+        log.info("ÓÃ»§"+id+"¼ÓÈë£¡µ±Ç°ÔÚÏßÈËÊýÎª" + getOnlineCount());
         try {
-            sendMessage("ï¿½ï¿½ï¿½Ó³É¹ï¿½");
+            sendMessage("Á¬½Ó³É¹¦");
         } catch (IOException e) {
-            log.error("websocket IOï¿½ì³£");
+            log.error("websocket IOÒì³£");
         }
     }
 
     /**
-     * ï¿½ï¿½ï¿½Ó¹Ø±Õµï¿½ï¿½ÃµÄ·ï¿½ï¿½ï¿½
+     * Á¬½Ó¹Ø±Õµ÷ÓÃµÄ·½·¨
      */
     @OnClose
     public void onClose() {
-        webSocketSet.remove(this);  //ï¿½ï¿½setï¿½ï¿½É¾ï¿½ï¿½
-        subOnlineCount();           //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1
-        log.info("ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ó¹Ø±Õ£ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª" + getOnlineCount());
+        webSocketSet.remove(this);  //´ÓsetÖÐÉ¾³ý
+        subOnlineCount();           //ÔÚÏßÊý¼õ1
+        log.info("ÓÐÒ»Á¬½Ó¹Ø±Õ£¡µ±Ç°ÔÚÏßÈËÊýÎª" + getOnlineCount());
     }
 
     /**
-     * ï¿½Õµï¿½ï¿½Í»ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ÃµÄ·ï¿½ï¿½ï¿½
+     * ÊÕµ½¿Í»§¶ËÏûÏ¢ºóµ÷ÓÃµÄ·½·¨
      *
-     * @param message ï¿½Í»ï¿½ï¿½Ë·ï¿½ï¿½Í¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+     * @param message ¿Í»§¶Ë·¢ËÍ¹ýÀ´µÄÏûÏ¢
      * */
     @OnMessage
     public void onMessage(String message, Session session) {
-        System.err.println("ï¿½ï¿½ï¿½Ô¿Í»ï¿½ï¿½Ëµï¿½ï¿½ï¿½Ï¢:" + message);
-        log.info("ï¿½ï¿½ï¿½Ô¿Í»ï¿½ï¿½Ëµï¿½ï¿½ï¿½Ï¢:" + message);
-        //ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½Ô¼ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½|0 ï¿½ï¿½Ê¾ï¿½ï¿½Ï¢Èºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½|X ï¿½ï¿½Ê¾ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½idÎªXï¿½ï¿½ï¿½Ã»ï¿½
+        System.err.println("À´×Ô¿Í»§¶ËµÄÏûÏ¢:" + message);
+        log.info("À´×Ô¿Í»§¶ËµÄÏûÏ¢:" + message);
+        //¿ÉÒÔ×Ô¼ºÔ¼¶¨×Ö·û´®ÄÚÈÝ£¬±ÈÈç ÄÚÈÝ|0 ±íÊ¾ÐÅÏ¢Èº·¢£¬ÄÚÈÝ|X ±íÊ¾ÐÅÏ¢·¢¸øidÎªXµÄÓÃ»§
         String sendMessage = message.split("[|]")[0];
         String sendUserId = message.split("[|]")[1];
         try {
@@ -72,18 +72,18 @@ public class WebSocketServer {
     }
 
     /**
-     *ï¿½á»°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÃµÄ·ï¿½ï¿½ï¿½
+     *»á»°·¢Éú´íÎóµ÷ÓÃµÄ·½·¨
      * @param session
      * @param error
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        log.error("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+        log.error("·¢Éú´íÎó");
         error.printStackTrace();
     }
 
     /**
-     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½Ö¸ï¿½ï¿½IDï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ò·µ»Ø²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½Ô¼ï¿½
+     * ·¢ËÍÐÅÏ¢¸øÖ¸¶¨IDÓÃ»§£¬Èç¹ûÓÃ»§²»ÔÚÏßÔò·µ»Ø²»ÔÚÏßÐÅÏ¢¸ø×Ô¼º
      * @param message
      * @param sendUserId
      * @throws IOException
@@ -91,17 +91,17 @@ public class WebSocketServer {
     public void sendtoUser(String message,String sendUserId) throws IOException {
         if (webSocketSet.get(sendUserId) != null) {
             if(!id.equals(sendUserId))
-                webSocketSet.get(sendUserId).sendMessage( "ï¿½Ã»ï¿½" + id + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½" + " <br/> " + message);
+                webSocketSet.get(sendUserId).sendMessage( "ÓÃ»§" + id + "·¢À´ÏûÏ¢£º" + " <br/> " + message);
             else
                 webSocketSet.get(sendUserId).sendMessage(message);
         } else {
-            //ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ò·µ»Ø²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½Ô¼ï¿½
-            sendtoUser("ï¿½ï¿½Ç°ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½",id);
+            //Èç¹ûÓÃ»§²»ÔÚÏßÔò·µ»Ø²»ÔÚÏßÐÅÏ¢¸ø×Ô¼º
+            sendtoUser("µ±Ç°ÓÃ»§²»ÔÚÏß",id);
         }
     }
 
     /**
-     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+     * ·¢ËÍÐÅÏ¢¸øËùÓÐÈË
      * @param message
      * @throws IOException
      */
