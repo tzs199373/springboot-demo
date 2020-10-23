@@ -21,6 +21,9 @@ public class SessionController {
     public String getSession(HttpServletRequest request,HttpServletResponse response) throws Exception{
         HttpSession session = request.getSession();
         System.out.println(session.getId());
+        System.out.println(session.getCreationTime());
+        System.out.println(session.getLastAccessedTime());
+        System.out.println(session.getMaxInactiveInterval());
         return (String)session.getAttribute("name");
     }
 }
