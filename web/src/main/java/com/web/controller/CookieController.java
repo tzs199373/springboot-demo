@@ -19,7 +19,7 @@ public class CookieController {
 
     @RequestMapping("/get")
     public String getCookie(HttpServletRequest request) throws Exception{
-        Cookie[] cookies = request.getCookies();//杩欐牱渚垮彲浠ヨ幏鍙栦竴涓猚ookie鏁扮粍
+        Cookie[] cookies = request.getCookies();//这样便可以获取一个cookie数组
         String s = "cookiename";
         for(Cookie cookie : cookies){
             if(cookie.getName().equals(s)){
