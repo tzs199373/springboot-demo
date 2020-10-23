@@ -500,8 +500,8 @@ public class HttpClientPoolUtil {
 									"1.zip")
 					));
 					add(new FormBodyPart(
-							"key",
-							new StringBody("value", ContentType.TEXT_PLAIN)
+							"param",
+							new StringBody(URLEncoder.encode("ºº×Ö","UTF-8"), ContentType.TEXT_PLAIN)
 					));
 				}},getResponseString);
 		System.out.println("http result: " + result);

@@ -4,6 +4,7 @@ import com.commonutils.util.json.JSONObject;
 import com.commonutils.util.validate.FileTypeCensor;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.springframework.beans.propertyeditors.URLEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 @Controller
@@ -27,6 +29,7 @@ public class FileController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 
     public String uploadFile(@RequestParam(value = "uploadFile", required = false) MultipartFile[] multipartFiles,
+                                 String param,
                                  HttpServletRequest request){
         JSONObject result = new JSONObject();
         try {
@@ -52,8 +55,7 @@ public class FileController {
                 os.close();
             }
             //Êä³öÆäËû×Ö¶Î
-            String name = request.getParameter("name");
-            System.out.println("name:"+name);
+            System.out.println("param:"+ URLDecoder.decode(param,"UTF-8"));
         } catch (Exception e) {
             result.put("msg", e.getMessage());
             result.put("flag", "fail");
