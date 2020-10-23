@@ -18,6 +18,7 @@ import java.util.Map;
 
 import javax.crypto.Cipher;
 
+import com.commonutils.util.base64.Base64Util;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**

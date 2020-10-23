@@ -1,4 +1,4 @@
-package com.commonutils.util.security;
+package com.commonutils.util.base64;
 
 
 import java.math.BigInteger;

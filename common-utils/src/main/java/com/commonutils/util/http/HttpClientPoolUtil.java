@@ -1,31 +1,17 @@
 package com.commonutils.util.http;
 
-import java.nio.charset.Charset;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
+import com.commonutils.util.json.JSONObject;
+import com.commonutils.util.string.StringUtil;
+import com.commonutils.util.validate.ObjectCensor;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -37,19 +23,29 @@ import org.apache.http.message.BasicHeaderElementIterator;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
 
 public class HttpClientPoolUtil {
+	private static CloseableHttpClient httpClient;
 
-	public static CloseableHttpClient httpClient = null;
+	private static final Logger logger = LoggerFactory.getLogger(HttpClientPoolUtil.class);
 
-	/**
-	 * 初始化连接池
-	 * @throws NoSuchAlgorithmException
-	 * @throws KeyManagementException
-	 */
-	public static synchronized void initPools() throws KeyManagementException, NoSuchAlgorithmException {
-
-		if (httpClient == null) {
+	static {
 			//采用绕过验证的方式处理https请求
 			SSLContext sslcontext = createIgnoreVerifySSL();
 			//设置协议http和https对应的处理socket链接工厂的对象
@@ -60,64 +56,53 @@ public class HttpClientPoolUtil {
 			PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 			cm.setDefaultMaxPerRoute(20);
 			cm.setMaxTotal(500);
-			httpClient = HttpClients.custom().setKeepAliveStrategy(defaultStrategy).setConnectionManager(cm).build();
-		}
-	}
-
-	/**
-	 * Http connection keepAlive 设置
-	 */
-	public static ConnectionKeepAliveStrategy defaultStrategy = new ConnectionKeepAliveStrategy() {
-		public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
-			HeaderElementIterator it = new BasicHeaderElementIterator(response.headerIterator(HTTP.CONN_KEEP_ALIVE));
-			int keepTime = 30;
-			while (it.hasNext()) {
-				HeaderElement he = it.nextElement();
-				String param = he.getName();
-				String value = he.getValue();
-				if (value != null && param.equalsIgnoreCase("timeout")) {
-					try {
-						return Long.parseLong(value) * 1000;
-					} catch (Exception e) {
-						e.printStackTrace();
+			httpClient = HttpClients.custom().setKeepAliveStrategy((HttpResponse response, HttpContext context)-> {
+				HeaderElementIterator it = new BasicHeaderElementIterator(response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+				int keepTime = 30;
+				while (it.hasNext()) {
+					HeaderElement he = it.nextElement();
+					String param = he.getName();
+					String value = he.getValue();
+					if (value != null && param.equalsIgnoreCase("timeout")) {
+						try {
+							return Long.parseLong(value) * 1000;
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}
-			}
-			return keepTime * 1000;
-		}
-	};
+				return keepTime * 1000;
+			}).setConnectionManager(cm).build();
+	}
+
 
 	/**
 	 * 绕过验证
-	 *
-	 * @return
-	 * @throws NoSuchAlgorithmException
-	 * @throws KeyManagementException
 	 */
-	public static SSLContext createIgnoreVerifySSL() throws NoSuchAlgorithmException, KeyManagementException {
-		SSLContext sc = SSLContext.getInstance("SSLv3");
-
-		// 实现一个X509TrustManager接口，用于绕过验证，不用修改里面的方法
-		X509TrustManager trustManager = new X509TrustManager() {
-			@Override
-			public void checkClientTrusted(
-					java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
-					String paramString) {
-			}
-
-			@Override
-			public void checkServerTrusted(
-					java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
-					String paramString) {
-			}
-
-			@Override
-			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-				return null;
-			}
-		};
-
-		sc.init(null, new TrustManager[] { trustManager }, null);
+	private static SSLContext createIgnoreVerifySSL()  {
+		SSLContext sc = null;
+		try {
+			sc = SSLContext.getInstance("SSLv3");
+			// 实现一个X509TrustManager接口，用于绕过验证，不用修改里面的方法
+			X509TrustManager trustManager = new X509TrustManager() {
+				public void checkClientTrusted(
+						java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
+						String paramString) {
+				}
+				public void checkServerTrusted(
+						java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
+						String paramString) {
+				}
+				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+					return null;
+				}
+			};
+			sc.init(null, new TrustManager[] { trustManager }, null);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (KeyManagementException e) {
+			e.printStackTrace();
+		}
 		return sc;
 	}
 
@@ -131,12 +116,9 @@ public class HttpClientPoolUtil {
 	 * @throws NoSuchAlgorithmException
 	 * @throws KeyManagementException
 	 */
-	public static HttpRequestBase getRequest(String url, String methodName,Map<String, String> headMap)
+	private static HttpRequestBase getRequest(String url, String methodName,Map<String, String> headMap)
 			throws KeyManagementException, NoSuchAlgorithmException {
-		if (httpClient == null) {
-			initPools();
-		}
-		HttpRequestBase method = null;
+		HttpRequestBase method;
 		RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(30 * 1000).setConnectTimeout(30 * 1000)
 				.setConnectionRequestTimeout(30 * 1000).setExpectContinueEnabled(false).build();
 
@@ -160,28 +142,50 @@ public class HttpClientPoolUtil {
 		return method;
 	}
 
+	public static Function getResponseString = new Function<CloseableHttpResponse,String>() {
+		@Override
+		public String apply(CloseableHttpResponse httpResponse) {
+			String str = "";
+			int httpResponseCode = httpResponse.getStatusLine().getStatusCode();//状态码
+			logger.info("httpResponseCode[{}]",httpResponseCode);
+			try {
+				str = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+			} catch (IOException e) {
+				logger.info(e.getMessage(),e);
+			}
+			return str;
+		}
+		@Override
+		public <V> Function<V, String> compose(Function<? super V, ? extends CloseableHttpResponse> before) {
+			return null;
+		}
+		@Override
+		public <V> Function<CloseableHttpResponse, V> andThen(Function<? super String, ? extends V> after) {
+			return null;
+		}
+	};
+
 
 	/**
-	 * 执行GET 请求
+	 ****************************************************** 四大基本方法*********************************************
+	 */
+
+	/**
+	 * 执行http get请求
 	 *
-	 * @param url
+	 * @param url 请求url
+	 * @param headMap 请求头
 	 * @return
 	 */
-	public static String get(String url,Map<String, String> headMap) throws Exception{
+	public static <R> R get(String url,Map<String, String> headMap,Function<CloseableHttpResponse,R> afterResposne) throws Exception{
 		HttpEntity httpEntity = null;
 		HttpRequestBase method = null;
-		String responseBody = "";
+		R responseBody;
 		try {
-			if (httpClient == null) {
-				initPools();
-			}
 			method = getRequest(url, HttpGet.METHOD_NAME,headMap);
 			HttpContext context = HttpClientContext.create();
 			CloseableHttpResponse httpResponse = httpClient.execute(method, context);
-			httpEntity = httpResponse.getEntity();
-			if (httpEntity != null) {
-				responseBody = EntityUtils.toString(httpEntity, "UTF-8");
-			}
+			responseBody = afterResposne.apply(httpResponse);
 		} catch (Exception e) {
 			if(method != null){
 				method.abort();
@@ -201,33 +205,22 @@ public class HttpClientPoolUtil {
 
 	/**
 	 * 执行http post请求
-	 * 若采用Content-Type：application/json，则data传json字符串
-	 * 若采用Content-Type：application/x-www-form-urlencoded，则data传键值对
 	 *
-	 * 可参考
-	 * @see com.commonutils.util.http.HttpUtil postBody与httpPost方法做了进一步封装
-	 *
-	 * @param url 请求地址
-	 * @param data  请求数据
-	 * @param data  请求头
+	 * @param url 		请求地址
+	 * @param data  	请求数据		若为application/x-www-form-urlencoded,data为键值对字符串；若为application/json：data为json字符串
+	 * @param headMap  	请求头 		headMap内需要指定Content-Type
 	 * @return
 	 */
-	public static String post(String url, String data,Map<String, String> headMap) throws Exception{
+	public static <R> R post(String url, String data,Map<String, String> headMap,Function<CloseableHttpResponse,R> afterResposne) throws Exception{
 		HttpEntity httpEntity = null;
 		HttpEntityEnclosingRequestBase method = null;
-		String responseBody = "";
+		R responseBody;
 		try {
-			if (httpClient == null) {
-				initPools();
-			}
 			method = (HttpEntityEnclosingRequestBase) getRequest(url, HttpPost.METHOD_NAME,headMap);
 			method.setEntity(new StringEntity(data,Charset.forName("UTF-8")));
 			HttpContext context = HttpClientContext.create();
 			CloseableHttpResponse httpResponse = httpClient.execute(method, context);
-			httpEntity = httpResponse.getEntity();
-			if (httpEntity != null) {
-				responseBody = EntityUtils.toString(httpEntity, "UTF-8");
-			}
+			responseBody = afterResposne.apply(httpResponse);
 
 		} catch (Exception e) {
 			if(method != null){
@@ -249,27 +242,21 @@ public class HttpClientPoolUtil {
 	/**
 	 * 执行http put请求
 	 *
-	 * @param url 请求地址
-	 * @param data  请求数据
-	 * @param data  请求头
+	 * @param url 		请求地址
+	 * @param data  	请求数据
+	 * @param headMap  	请求头
 	 * @return
 	 */
-	public static String put(String url, String data,Map<String, String> headMap) throws Exception{
+	public static <R> R put(String url, String data,Map<String, String> headMap,Function<CloseableHttpResponse,R> afterResposne) throws Exception{
 		HttpEntity httpEntity = null;
 		HttpEntityEnclosingRequestBase method = null;
-		String responseBody = "";
+		R responseBody;
 		try {
-			if (httpClient == null) {
-				initPools();
-			}
 			method = (HttpEntityEnclosingRequestBase) getRequest(url, HttpPut.METHOD_NAME,headMap);
 			method.setEntity(new StringEntity(data,Charset.forName("UTF-8")));
 			HttpContext context = HttpClientContext.create();
 			CloseableHttpResponse httpResponse = httpClient.execute(method, context);
-			httpEntity = httpResponse.getEntity();
-			if (httpEntity != null) {
-				responseBody = EntityUtils.toString(httpEntity, "UTF-8");
-			}
+			responseBody = afterResposne.apply(httpResponse);
 
 		} catch (Exception e) {
 			if(method != null){
@@ -291,24 +278,19 @@ public class HttpClientPoolUtil {
 	/**
 	 * 执行DELETE 请求
 	 *
-	 * @param url
+	 * @param url 		请求地址
+	 * @param headMap  	请求头
 	 * @return
 	 */
-	public static String delete(String url,Map<String, String> headMap) throws Exception{
+	public static <R> R delete(String url,Map<String, String> headMap,Function<CloseableHttpResponse,R> afterResposne) throws Exception{
 		HttpEntity httpEntity = null;
 		HttpRequestBase method = null;
-		String responseBody = "";
+		R responseBody;
 		try {
-			if (httpClient == null) {
-				initPools();
-			}
 			method = getRequest(url, HttpDelete.METHOD_NAME,headMap);
 			HttpContext context = HttpClientContext.create();
 			CloseableHttpResponse httpResponse = httpClient.execute(method, context);
-			httpEntity = httpResponse.getEntity();
-			if (httpEntity != null) {
-				responseBody = EntityUtils.toString(httpEntity, "UTF-8");
-			}
+			responseBody = afterResposne.apply(httpResponse);
 		} catch (Exception e) {
 			if(method != null){
 				method.abort();
@@ -326,4 +308,138 @@ public class HttpClientPoolUtil {
 		return responseBody;
 	}
 
+	/**
+	 ****************************************************** 具体协议*********************************************
+	 */
+	/**
+	 * @param url
+	 * @param param		JSON字符串,将转为键值对形式追加到url后面
+	 * @param body		JSON字符串
+	 * @param headMap	消息头，内含"Content-Type"="application/x-www-form-urlencoded"
+	 * @return
+	 * @throws Exception
+	 */
+	public static <R> R postForm(String url, String param,String body, Map<String, String> headMap,Function<CloseableHttpResponse,R> afterResposne) throws Exception{
+		headMap.put("Content-Type","application/x-www-form-urlencoded");
+
+		// 构建请求参数
+		StringBuffer sb = new StringBuffer();
+		if (!ObjectCensor.checkObjectIsNull(body)) {
+			JSONObject joinParam = JSONObject.fromObject(body);
+			Iterator iter = joinParam.keys();
+			while (iter.hasNext())
+			{
+				String keyT =iter.next()+"";
+				String key  = StringUtil.getRstFieldName_ByVoFldName(keyT).toLowerCase();
+				String val= StringUtil.getJSONObjectKeyVal(joinParam,keyT);
+				sb.append(key);
+				sb.append("=");
+				sb.append(URLEncoder.encode(val, "UTF-8"));
+				sb.append("&");
+			}
+			sb.replace(0, sb.length(), sb.substring(0, sb.length() - 1));
+		}
+		return HttpClientPoolUtil.post(appendParamToURL(url,param), sb.toString(),headMap,afterResposne);
+	}
+
+	/**
+	 * @param url
+	 * @param param		JSON字符串,将转为键值对形式追加到url后面
+	 * @param body		JSON字符串
+	 * @param headMap	消息头，内含"Content-Type"="application/json"
+	 * @return
+	 * @throws Exception
+	 */
+	public static <R> R postJSON(String url, String param,String body,Map<String, String> headMap,Function<CloseableHttpResponse,R> afterResposne) throws Exception{
+		headMap.put("Content-Type","application/json");
+		return HttpClientPoolUtil.post(appendParamToURL(url,param), body,headMap,afterResposne);
+	}
+
+	/**
+	 * @param url
+	 * @param param		JSON字符串,将转为键值对形式追加到url后面
+	 * @param body		JSON字符串
+	 * @param headMap	消息头，内含"Content-Type"="application/x-www-form-urlencoded"
+	 * @return
+	 * @throws Exception
+	 */
+	public static <R> R putForm(String url, String param,String body,Map<String, String> headMap,Function<CloseableHttpResponse,R> afterResposne) throws Exception{
+		headMap.put("Content-Type","application/x-www-form-urlencoded");
+
+		// 构建请求参数
+		StringBuffer sb = new StringBuffer();
+		if (!ObjectCensor.checkObjectIsNull(body)) {
+			JSONObject joinParam = JSONObject.fromObject(body);
+			Iterator iter = joinParam.keys();
+			while (iter.hasNext())
+			{
+				String keyT =iter.next()+"";
+				String key  = StringUtil.getRstFieldName_ByVoFldName(keyT).toLowerCase();
+				String val= StringUtil.getJSONObjectKeyVal(joinParam,keyT);
+				sb.append(key);
+				sb.append("=");
+				sb.append(URLEncoder.encode(val, "UTF-8"));
+				sb.append("&");
+			}
+			sb.replace(0, sb.length(), sb.substring(0, sb.length() - 1));
+		}
+		return HttpClientPoolUtil.put(appendParamToURL(url,param), sb.toString(),headMap,afterResposne);
+	}
+
+	/**
+	 * @param url
+	 * @param param		JSON字符串,将转为键值对形式追加到url后面
+	 * @param body		JSON字符串
+	 * @param headMap	消息头，内含"Content-Type"="application/json"
+	 * @return
+	 * @throws Exception
+	 */
+	public static <R> R putJSON(String url, String param,String body,Map<String, String> headMap,Function<CloseableHttpResponse,R> afterResposne) throws Exception{
+		headMap.put("Content-Type","application/json");
+		return HttpClientPoolUtil.put(appendParamToURL(url,param),body,headMap,afterResposne);
+	}
+
+	/**
+	 * @param url
+	 * @param param		JSON字符串,将转为键值对形式追加到url后面
+	 * @return
+	 * @throws Exception
+	 */
+	public static <R> R delete(String url,String param,Map<String, String> headMap,Function<CloseableHttpResponse,R> afterResposne) throws Exception{
+		return HttpClientPoolUtil.delete(appendParamToURL(url,param),headMap,afterResposne);
+	}
+
+	/**
+	 * @param url
+	 * @param param		JSON字符串,将转为键值对形式追加到url后面
+	 * @return
+	 * @throws Exception
+	 */
+	public static <R> R get(String url, String param,Map<String, String> headMap,Function<CloseableHttpResponse,R> afterResposne) throws Exception{
+		return HttpClientPoolUtil.get(appendParamToURL(url,param),headMap,afterResposne);
+	}
+
+	private static String appendParamToURL(String url,String param) throws Exception{
+		if(ObjectCensor.isStrRegular(param)){
+			JSONObject json  = JSONObject.fromObject(param);
+			Iterator iter =  json.keys();
+			if(json.size() > 0 ){
+				StringBuffer sb = new StringBuffer(url+"?");
+				while(iter.hasNext())
+				{
+					String key =iter.next()+"";
+					String val= StringUtil.getJSONObjectKeyVal(json,key);
+					sb.append(key+"="+URLEncoder.encode(val, "UTF-8")+"&");
+				}
+				sb.deleteCharAt(sb.length() - 1);
+				url = sb.toString();
+			}
+		}
+		return url;
+	}
+
+	public static void main(String[] args) throws Exception {
+		Object a = HttpClientPoolUtil.get("http://127.0.0.1:8081/async", new HashMap<>(),getResponseString);
+		System.out.println("======="+a);
+	}
 }
