@@ -12,8 +12,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -64,6 +67,17 @@ public class HTTPController {
     public String updateAttr( Map<String, String> map) {
         System.out.println(map.get("a"));
         return "success";
+    }
+
+    @RequestMapping(value = "/test")
+    public String test(HttpServletRequest request) throws IOException {
+        BufferedReader br = request.getReader();
+        String str, wholeStr = "";
+        while((str = br.readLine()) != null){
+            wholeStr += str;
+        }
+        System.out.println(wholeStr);
+        return wholeStr;
     }
 }
 
