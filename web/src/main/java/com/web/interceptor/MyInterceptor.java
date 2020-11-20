@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Component
 public class MyInterceptor implements HandlerInterceptor {
     @NotNull
-    @Value("${webIntercept.enabled:}")
+    @Value("${webIntercept.enabled:true}")
     private boolean intercepted;//À¹½ØÆ÷¿ªÆô±êÖ¾
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
