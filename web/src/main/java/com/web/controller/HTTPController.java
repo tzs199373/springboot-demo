@@ -51,7 +51,7 @@ public class HTTPController {
     }
 
     @RequestMapping("/getRemoteAddr")
-//    @CurrentLimiter(QPS = 2)
+    @CurrentLimiter(QPS = 2)
     public String getRemoteAddr(String msg, HttpServletRequest request,HttpServletResponse response) throws Exception{
         String remoteAddr = RemoteAddrUtil.getRemoteAddr(request);
         System.out.println(remoteAddr);

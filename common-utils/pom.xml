@@ -94,6 +94,11 @@
 			<artifactId>spring-context-support</artifactId>
 			<version>RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>cn.yueshutong</groupId>
+			<artifactId>spring-boot-starter-current-limiting</artifactId>
+			<version>0.0.8.RELEASE</version>
+		</dependency>
 		<!--http-->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>

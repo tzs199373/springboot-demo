@@ -6,7 +6,7 @@ import java.net.UnknownHostException;
 
 public class RemoteAddrUtil {
     /**
-     * 获取用户真实IP地址，不直接使用request.getRemoteAddr()的原因是有可能用户使用了代理软件方式避免真实IP地址
+     * 获取用户真实IP地址，不直接使用request.getRemoteAddr()的原因是有可能存在多级代理
      */
     public static String getRemoteAddr(HttpServletRequest request) {
         String ip = request.getHeader("x-forwarded-for");
