@@ -17,6 +17,7 @@ public class MyInterceptor implements HandlerInterceptor {
     private boolean intercepted;//拦截器开启标志
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
         System.out.println("request请求地址path["+request.getServletPath()+"] uri["+request.getRequestURI()+"]");
         System.out.println(intercepted);
         return true;

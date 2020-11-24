@@ -1,6 +1,8 @@
 package com.commonutils.util.http;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class RemoteAddrUtil {
     /**
@@ -31,6 +33,15 @@ public class RemoteAddrUtil {
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
+            if("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip)){
+                try {
+                    InetAddress inet = InetAddress.getLocalHost();
+                    ip= inet.getHostAddress();
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
+
+            }
         }
         return ip;
     }

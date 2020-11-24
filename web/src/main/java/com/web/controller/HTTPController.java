@@ -1,6 +1,8 @@
 package com.web.controller;
 
+import cn.yueshutong.springbootstartercurrentlimiting.annotation.CurrentLimiter;
 import com.commonutils.util.http.HttpClientPoolUtil;
+import com.commonutils.util.http.RemoteAddrUtil;
 import com.commonutils.util.json.JSONArray;
 import com.commonutils.util.json.JSONObject;
 import com.web.async.AsyncService;
@@ -49,8 +51,9 @@ public class HTTPController {
     }
 
     @RequestMapping("/getRemoteAddr")
+//    @CurrentLimiter(QPS = 2)
     public String getRemoteAddr(String msg, HttpServletRequest request,HttpServletResponse response) throws Exception{
-        String remoteAddr = request.getRemoteAddr();
+        String remoteAddr = RemoteAddrUtil.getRemoteAddr(request);
         System.out.println(remoteAddr);
         return remoteAddr;
     }
