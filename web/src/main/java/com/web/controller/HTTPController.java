@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-@RestController
+@Controller
 public class HTTPController {
     private static Map<String,String> headMap = new HashMap<String,String>();
 
@@ -37,6 +37,14 @@ public class HTTPController {
     static{
     }
 
+    @RequestMapping("/hello")
+    @ResponseBody
+    @CurrentLimiter(QPS = 10)
+    public String hello( HttpServletResponse response) throws Exception{
+        long time = System.currentTimeMillis();
+        System.out.println(time);
+        return "{\"time\":\""+time+"\"}";
+    }
 
     @RequestMapping("/account")
     public Bill account(Bill bill,String sign, HttpServletResponse response) throws Exception{
@@ -51,7 +59,7 @@ public class HTTPController {
     }
 
     @RequestMapping("/getRemoteAddr")
-    @CurrentLimiter(QPS = 2)
+    @CurrentLimiter(QPS = 10)
     public String getRemoteAddr(String msg, HttpServletRequest request,HttpServletResponse response) throws Exception{
         String remoteAddr = RemoteAddrUtil.getRemoteAddr(request);
         System.out.println(remoteAddr);
