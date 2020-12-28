@@ -27,15 +27,10 @@ import java.util.concurrent.Future;
 
 @Controller
 public class HTTPController {
-    private static Map<String,String> headMap = new HashMap<String,String>();
-
     @Autowired
     private AsyncService asyncService;
     @Autowired
     private ObjectFactory<ProtoTypeService> protoTypeServiceObjectFactory;
-
-    static{
-    }
 
     @RequestMapping("/hello")
     @ResponseBody
@@ -47,7 +42,8 @@ public class HTTPController {
     }
 
     @RequestMapping("/account")
-    public Bill account(Bill bill,String sign, HttpServletResponse response) throws Exception{
+    @ResponseBody
+    public Bill account(@RequestBody Bill bill,String sign, HttpServletResponse response) throws Exception{
         System.out.println(sign);
         return bill;
     }
